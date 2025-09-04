@@ -22,6 +22,7 @@ jobs:
           rm -rf software/code/files/impl/*
           mkdir -p software/code/files/api
           mkdir -p software/code/files/impl 
+          ls -R tmp
           cp -r tmp/packages/atum/src/* software/code/files/api
           for robot in tmp/packages/*; do
             name=$(basename "$robot")
