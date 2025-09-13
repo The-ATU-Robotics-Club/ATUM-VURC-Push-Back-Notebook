@@ -42,8 +42,8 @@
 
 
 % ~~~~~~~~~~ GLOBAL DEFINITIONS ~~~~~~~~~~ %
-\gdef\season{2024-2025}
-\gdef\game{High Stakes}
+\gdef\season{2025-2026}
+\gdef\game{Push Back}
 \gdef\teamname{ATUM's Family}
 \gdef\teamnumber{ATUM}
 \gdef\matrixwidth{.9}

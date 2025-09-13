@@ -1,6 +1,6 @@
-# ATUM VRC Over Under Notebook
+# ATUM VRC Push Back Notebook
 
-Team ATUM's notebook for the 2024-2025 V5RC game, Over Under. For judges, this
+Team ATUM's notebook for the 2024-2025 VURC game, Push Back. For judges, this
 repository contains the entire version history of the notebook. For ATUM team
 members, below is a short guide to contributing and working with this notebook.
 See the README on the organization page for information regarding GitHub in
