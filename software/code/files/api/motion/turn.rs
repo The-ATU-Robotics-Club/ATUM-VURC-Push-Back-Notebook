@@ -1,40 +1,32 @@
-use core::time::Duration;
+use std::time::{Duration, Instant};
 
-use log::{debug, warn};
-use vexide::{
-    prelude::{Float, Motor},
-    time::{sleep, Instant},
+use log::{debug, info, warn};
+use uom::si::{
+    angle::{degree, radian},
+    angular_velocity::degree_per_second,
+    f64::{Angle, AngularVelocity, Length},
 };
+use vexide::time::sleep;
 
 use crate::{
     controllers::pid::Pid,
-    pose::Vec2,
+    localization::vec2::Vec2,
     subsystems::drivetrain::Drivetrain,
-    units::{angle::Angle, length::Length},
+    utils::{angular_distance, wrap},
 };
 
 pub struct Turn {
-    small_pid: Pid,
-    large_pid: Pid,
+    pid: Pid,
     tolerance: Angle,
-    velocity_tolerance: Angle,
-    threshold: Angle,
+    velocity_tolerance: AngularVelocity,
 }
 
 impl Turn {
-    pub fn new(
-        small_pid: Pid,
-        large_pid: Pid,
-        tolerance: Angle,
-        velocity_tolerance: Angle,
-        threshold: Angle,
-    ) -> Self {
+    pub fn new(pid: Pid, tolerance: Angle, velocity_tolerance: AngularVelocity) -> Self {
         Self {
-            small_pid,
-            large_pid,
+            pid,
             tolerance,
             velocity_tolerance,
-            threshold,
         }
     }
 
@@ -44,8 +36,8 @@ impl Turn {
         point: Vec2<Length>,
         timeout: Duration,
     ) {
-        let pose = dt.get_pose();
-        let target = pose.angular_distance(point);
+        let pose = dt.pose();
+        let target = angular_distance(pose, point);
         self.turn_to(dt, target, timeout).await;
     }
 
@@ -53,36 +45,35 @@ impl Turn {
         let mut time = Duration::ZERO;
         let mut prev_time = Instant::now();
 
-        let starting_error = (target - dt.get_pose().h).wrap().abs();
-        let pid = if starting_error < self.threshold {
-            &mut self.small_pid
-        } else {
-            &mut self.large_pid
-        };
+        let starting_error = wrap(target - dt.pose().h).abs();
 
         loop {
-            sleep(Motor::WRITE_INTERVAL).await;
-            time += Motor::WRITE_INTERVAL;
+            sleep(Duration::from_millis(10)).await;
             let elapsed_time = prev_time.elapsed();
+            time += elapsed_time;
             prev_time = Instant::now();
 
-            let heading = dt.get_pose().h;
-            let error = (target - heading).wrap();
-            let output = pid.output(error.as_radians(), elapsed_time);
-            let omega = dt.get_pose().omega;
+            let heading = dt.pose().h;
+            let error = wrap(target - heading);
+            let output = self.pid.output(error.get::<radian>(), elapsed_time);
+            let omega = dt.pose().omega;
 
             debug!(
                 "(Heading, Velocity): ({}, {})",
-                error.as_degrees(),
-                omega.as_degrees()
+                error.get::<degree>(),
+                omega.get::<degree_per_second>()
             );
             if error.abs() < self.tolerance && omega.abs() < self.velocity_tolerance {
-                debug!("Turn complete at: {}", starting_error.as_degrees());
+                info!(
+                    "Turn complete at: {} with {}ms",
+                    starting_error.get::<degree>(),
+                    time.as_millis()
+                );
                 break;
             }
 
             if time > timeout {
-                warn!("Turn interrupted at: {}", starting_error.as_degrees());
+                warn!("Turn interrupted at: {}", starting_error.get::<degree>());
                 break;
             }
 

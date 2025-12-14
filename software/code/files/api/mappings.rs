@@ -1,4 +1,4 @@
-use vexide::devices::controller::{ButtonState, JoystickState};
+use vexide::controller::{ButtonState, JoystickState};
 
 // Different drive mods that the driver can switch to
 pub enum DriveMode {
@@ -17,10 +17,10 @@ pub enum DriveMode {
 pub struct ControllerMappings {
     pub drive_mode: DriveMode,
 
-    pub intake: ButtonState,
-    pub outake: ButtonState,
-    // pub toggle_color_sort: ButtonState,
-
-    // piston to take balls from match load
-    // pub match_loading: ButtonState,
+    pub intake_high: ButtonState,
+    pub intake_low: ButtonState,
+    pub outake_high: ButtonState,
+    pub outake_low: ButtonState,
+    pub lift: ButtonState,
+    pub duck_bill: ButtonState,
 }

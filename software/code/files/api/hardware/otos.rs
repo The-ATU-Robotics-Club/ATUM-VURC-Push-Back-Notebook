@@ -1,44 +1,40 @@
-use alloc::rc::Rc;
-use core::{cell::RefCell, time::Duration};
+use std::{cell::RefCell, rc::Rc, time::{Duration, Instant}};
 
 use bytemuck::{Pod, Zeroable};
 use log::{error, info};
+use uom::si::{
+    angle::degree,
+    angular_velocity::degree_per_second,
+    f64::{Angle, AngularVelocity, Length, Velocity},
+    length::inch,
+    velocity::inch_per_second,
+};
 use vexide::{
-    devices::smart::serial::SerialError,
-    prelude::{SerialPort, SmartPort},
+    smart::{serial::SerialError, SmartPort},
+    prelude::SerialPort,
     task::{spawn, Task},
-    time::{sleep, Instant},
+    time::sleep,
 };
 
 use super::{packet::Packet, serial_device::SerialDevice};
-use crate::{
-    pose::Pose,
-    units::{
-        angle::{Angle, IntoAngle},
-        length::{IntoLength, Length},
-    },
-};
+use crate::localization::pose::Pose;
 
 struct Command;
 
-#[allow(unused)]
 impl Command {
     const INITIALIZE: u8 = 0;
     const CALIBRATE: u8 = 1;
     const IS_CALIBRATING: u8 = 2;
     const RESET: u8 = 3;
-    const RESET_TRACKING: u8 = 4;
-    const SET_OFFSET: u8 = 5;
-    const SET_POSITION: u8 = 6;
-    const GET_POSITION: u8 = 7;
-    const GET_VELOCITY: u8 = 8;
-    const CHECK: u8 = 9;
-    const SELF_TEST: u8 = 10;
-    const INVALID: u8 = 11;
+    const SET_OFFSET: u8 = 4;
+    const SET_POSITION: u8 = 5;
+    const GET_POSITION: u8 = 6;
+    const GET_VELOCITY: u8 = 7;
+    const CHECK: u8 = 8;
+    const SELF_TEST: u8 = 9;
 }
 
-#[allow(unused)]
-enum Response {
+pub enum Response {
     Success,
     Error,
     Waiting,
@@ -68,9 +64,9 @@ impl Otos {
     const RECEIVING_SIZE: usize = 14;
 
     #[must_use]
-    pub async fn new(port: SmartPort, offset: Pose) -> Self {
+    pub async fn new(port: SmartPort, start: Pose, offset: Pose) -> Self {
         let port = SerialPort::open(port, 115200).await;
-        let mut otos = SerialDevice::new(port, Response::Error as u8, 5);
+        let mut otos = SerialDevice::new(port, Duration::from_millis(5));
 
         _ = otos
             .msg(Packet::new(Command::INITIALIZE), Self::SENDING_SIZE)
@@ -82,10 +78,25 @@ impl Otos {
             .msg(Packet::new(Command::RESET), Self::SENDING_SIZE)
             .await;
 
+        let starting_piece = OTOSData {
+            x: start.x.get::<inch>() as f32,
+            y: start.y.get::<inch>() as f32,
+            h: start.h.get::<degree>() as f32,
+        };
+
+        let bytes = bytemuck::bytes_of(&starting_piece);
+        let data = bytes.to_vec();
+        _ = otos
+            .msg(
+                Packet::with_data(Command::SET_POSITION, data),
+                Self::SENDING_SIZE,
+            )
+            .await;
+
         let offset_piece = OTOSData {
-            x: offset.x.as_inches() as f32,
-            y: offset.y.as_inches() as f32,
-            h: offset.h.as_degrees() as f32,
+            x: offset.x.get::<inch>() as f32,
+            y: offset.y.get::<inch>() as f32,
+            h: offset.h.get::<degree>() as f32,
         };
 
         let bytes = bytemuck::bytes_of(&offset_piece);
@@ -122,15 +133,12 @@ impl Otos {
         }
 
         _ = otos
-            .msg(Packet::new(Command::RESET_TRACKING), Self::SENDING_SIZE)
-            .await;
-
-        _ = otos
             .msg(Packet::new(Command::SELF_TEST), Self::SENDING_SIZE)
             .await;
         sleep(Duration::from_millis(100)).await;
+        Self::check(&mut otos).await;
         info!("OTOS constructed!");
-        let pose = Rc::new(RefCell::new(Pose::default()));
+        let pose = Rc::new(RefCell::new(start));
 
         Self {
             pose: pose.clone(),
@@ -169,15 +177,15 @@ impl Otos {
         self.pose.borrow().h
     }
 
-    pub fn vf(&self) -> Length {
+    pub fn vf(&self) -> Velocity {
         self.pose.borrow().vf
     }
 
-    pub fn vs(&self) -> Length {
+    pub fn vs(&self) -> Velocity {
         self.pose.borrow().vs
     }
 
-    pub fn omega(&self) -> Angle {
+    pub fn omega(&self) -> AngularVelocity {
         self.pose.borrow().omega
     }
 
@@ -203,27 +211,27 @@ impl Otos {
         let vel = bytemuck::from_bytes::<OTOSData>(&vel_packet.data);
 
         Ok(Pose {
-            x: (pos.x as f64).meter(),
-            y: (pos.y as f64).meter(),
-            h: (pos.h as f64).rad(),
-            vf: (-0.97 * vel.x as f64).meter(),
-            vs: (0.97 * vel.y as f64).meter(),
-            omega: (-0.9825 * vel.h as f64).rad(),
+            x: Length::new::<inch>(pos.x as f64),
+            y: Length::new::<inch>(pos.y as f64),
+            h: Angle::new::<degree>(pos.h as f64),
+            vf: Velocity::new::<inch_per_second>(-0.97 * vel.x as f64),
+            vs: Velocity::new::<inch_per_second>(0.97 * vel.y as f64),
+            omega: AngularVelocity::new::<degree_per_second>(-0.9825 * vel.h as f64),
         })
     }
 
-    // async fn check(&mut self) -> bool {
-    //     let response = self
-    //         .otos
-    //         .msg(Packet::new(Command::CHECK), 2)
-    //         .await
-    //         .unwrap();
-    //     let good = response.is_correct() && response.id == Response::Success as u8;
-    //
-    //     if !good {
-    //         // ERROR
-    //     }
-    //
-    //     good
-    // }
+    // confirm if this function works as intended
+    async fn check(otos: &mut SerialDevice) -> bool {
+        let response = otos
+            .msg(Packet::new(Command::CHECK), 2)
+            .await
+            .unwrap_or_default();
+        let good = response.is_correct() && response.id == Response::Success as u8;
+
+        if !good {
+            error!("Detected issue with OTOS.");
+        }
+
+        good
+    }
 }
