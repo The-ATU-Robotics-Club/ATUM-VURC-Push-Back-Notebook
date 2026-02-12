@@ -19,11 +19,11 @@ possibility of one motor going out, the loss in that match could have been avoid
 we seek to develop a program that will respond to failures in a safe and reliable manner while
 notifying us of the problems that had occurred.
 
-Flexibility refers to the ability to easily modify and add features to the robot software. Since scouting may reveal quirks in opponents' autonomous routines, it would be helpful to be able to quickly add additional routines, for instance. Or, while testing, we may run into a new fail state that can be detected programmatically. Or, while testing, our drivers may discover that they do not feel comfortable with the current control scheme and may offer alternative suggestions. All-in-all, it is critical that our software is capable of undergoing rapid changes.
+Flexibility refers to the ability to easily modify and add features to the robot software. Since scouting may reveal quirks in opponents' autonomous routines, it would be helpful to be able to quickly add additional routines, for instance. Or, while testing, we may run into a new fail state that can be detected pro-grammatically. Or, while testing, our drivers may discover that they do not feel comfortable with the current control scheme and may offer alternative suggestions. All-in-all, it is critical that our software is capable of undergoing rapid changes.
 
 \section{Principles}
 \subsection{Work Process}
-"Make it work. Make it right. Make it fast." \cite{bib:makeitworkmakeitright} is a maxim from Kent Beck that briefly summarizes our methodology when it comes to programming. The first task is to accomplish the basic goals we have in mind (make the drive move, get readings from encoders, etc.) and make it work. After that, we should consider special cases and refactor to make the code cleaner to understand, make it right. Lastly, if necessary, we should consider the performance of our code, make it fast. This process describes the majority of work on the robot software.
+"Make it work. Make it right. Make it fast." \cite{bib:makeitworkmakeitright} is a Kent Beck maxim that briefly summarizes our methodology when it comes to programming. The first task is to accomplish the basic goals we have in mind (make the drive move, get readings from encoders, etc.) and make it work. After that, we should consider special cases and refactor to make the code cleaner to understand, make it right. Lastly, if necessary, we should consider the performance of our code, make it fast. This process describes the majority of the work on robot software.
 
 We will typically immediately program for the test with real hardware. In some special circumstances, though, we may also incorporate additional planning before programming to the brain. Of course, there is always pencil and paper, but we may also incorporate the use of another tool or language like Python to prototype ideas.
 
@@ -31,7 +31,7 @@ We will typically immediately program for the test with real hardware. In some s
 In order to support better readability, we make use of a consistent style throughout all files in the project. This is assisted via rustfmt (which is discussed later) and auxiliary scripts to direct its use.
 
 \subsection{Names}
-Names should of course be descriptive and brief, that should be a given. Additionally, we have a simple rule for the style of casing we use: pascal case (PascalCase) is used for structs, snake case (snake\_case) is used for everything else. Even file names are written in snake case.
+Names should of course be descriptive and brief, which should be a given. Additionally, we have a simple rule for the style of casing we use: pascal case (PascalCase) is used for structures, and snake case (snake\_case) is used for everything else. Even file names are written in snake case.
 
 \subsection{Assignment}
 Any time we want to declare a variable, we have an order of precedence for mutability:
@@ -40,7 +40,7 @@ Any time we want to declare a variable, we have an order of precedence for mutab
     \item Immutable
     \item Mutable
 \end{enumerate}
-Constants are essentially values that can be determined at compile time. Immutable, as the name implies, can not be modified after their initialization; whereas mutable items can be. We prefer immutable over mutable to avoid incidental changes and be clear that said entity will not change. We prefer constants over immutable objects simply because of additional performance (constants are not always possible in every situation, but nice when they are).
+Constants are essentially values that can be determined at compile time. Immutable, as the name implies, can not be modified after their initialization; whereas mutable items can be. We prefer immutable over mutable to avoid incidental changes and to be clear that said entity will not change. We prefer constants over immutable objects simply because of additional performance (constants are not always possible in every situation, but it is nice when they are).
 
 \begin{lstlisting}[language=Rust]
     const a: usize = 1; // Constant
@@ -48,7 +48,7 @@ Constants are essentially values that can be determined at compile time. Immutab
     let mut c = 3; // Mutable
 \end{lstlisting}
 
-Note that the compiler can infer the type of a non-constant expression, therefore a type doesn't need to be specifically declared.
+Note that the compiler can infer the type of a non-constant expression, therefore a type does not need to be specifically declared.
 
 Even methods associated with objects can be considered "immutable," implying that calling the method will result in no change to the internal state of the object.
 
@@ -62,19 +62,19 @@ Even methods associated with objects can be considered "immutable," implying tha
 \end{lstlisting}
 
 \subsection{Comments}
-There are two main types of comments: documentation and implementation.
+There are two main types of comments: Documentation and Implementation.
 
 \subsection{Borrowing, Smart Pointers, and Values}
-Simply put, there are three main ways to pass a parameter into a procedure. The most straightforward is to pass by value, where the data is copied over into the respective parameter variables. This is okay for simpler structures like integers, floating-point values, and so on, but not all types will implement the copy or clone trait, and adding it to large structures like vectors may entail a great deal of copying.
+In simple terms, there are three main ways to pass a parameter in a procedure. The most straightforward is to pass by value, where the data is copied over into the respective parameter variables. This is okay for simpler structures like integers, floating-point values, and so on, but not all types will implement the copy or clone trait, and adding it to large structures like vectors may entail a great deal of copying.
 
 In such cases, it may be preferable to \textit{borrow} the contents of the vector rather than clone over all the values
 
 There are times where we need ownership of the value from multiple locations, such as working with asynchronous tasks, which is prohibited by the borrow checker. In order to get around this, we can use reference counted smart pointers. 
 
-There are two types of RC smart pointers: Rc (Reference Counted), Arc (Atomic Reference Counted).
+There are two types of smart pointers: RC (Reference Counted) and ARC (Atomic Reference Counted).
 
 \subsubsection{Miscellaneous}
-We prefer to place curly braces inline (though this is purely aesthetic), that is to say we prefer
+We prefer to place curly braces inline (though this is purely aesthetic); that is, we prefer to place curly braces.
 \begin{lstlisting}
     fn do_something() {
         ...
@@ -89,10 +89,10 @@ over
 \end{lstlisting}
 
 \section{Tools}
-In order to improve the development experience, we employ a multitude of software tools to support our programming efforts. Some of these are essential to our team, while others simply provide quality of life during coding.
+In order to improve the development experience, we employed a multitude of software tools to support our programming efforts. Some of these are essential to our team, while others simply provide extended quality during coding.
 
 \subsection{Vexide}
-We use Vexide \cite{bib:vexide} as our development platform for our robots. We could provide a design matrix of some sort for why we made this decision, but it's quite straightforward.
+We use Vexide \cite{bib:vexide} as our development platform for our robots. We could provide a design matrix of some sort for why we made this decision, but it is quite straightforward.
 
 There are pretty much three options:
 \begin{itemize}
@@ -110,14 +110,29 @@ VSCode also allows for the easy installation of extensions. Outside of common ex
     \item item 1
 \end{itemize}
 
-\subsection{Comments?}
-Something goes here over how we comment our code
+% \subsection{Comments}
+% Something goes here over how we comment our code
 
 \subsection{Libraries}
-While we prefer to provide our own custom solutions to whatever problems we face, occasionally a task would require a significant effort (several months/years) and would have little relevance to the actual behavior of the robot. In these circumstances, we make use of third-party libraries.
+While we prefer to provide our own custom solutions to whatever problems we face, occasionally a task requires a significant effort (months/years) and would have little relevance to the actual behavior of the robot. In these circumstances, we can make use of third-party libraries.
 
-\subsubsection{nalgebra}
-Linear algebra library
+% \subsubsection{nalgebra}
+% Linear algebra library
+
+\subsubsection{uom}
+
+The \texttt{uom} (Units of Measurement) crate provides compile-time dimensional analysis by attaching physical units (such as meters, seconds, volts, etc.) to numeric values. This prevents unit-conversion mistakes and ensures mathematical correctness across calculations. For our usecase, \texttt{uom} is especially useful for safely handling quantities such as distance, velocity, acceleration, and angular measurements, reducing the risk of subtle bugs in motion and control algorithms.
+
+\subsubsection{log}
+
+The \texttt{log} crate allows structured logging at multiple levels (e.g., error, warn, info, debug, trace) without committing to a specific logging backend. It is used to monitor system behavior, debug sensor readings, and trace control flow during testing and runtime without significantly impacting performance.
+
+\subsubsection{bytemuck}
+
+The \texttt{bytemuck} crate provides safe, zero-cost conversions between plain data types and byte slices. It enables efficient reinterpretation of data in memory while enforcing strict safety, guarantees through marker traits. When using a micro-controller, we need to be able to send the sensor readings to the brain.
+
+\subsubsection{num-traits}
+The \texttt{num-traits} crate defines numeric trait abstractions such as \texttt{Float}, \texttt{Num}, and \texttt{Zero}, allowing generic programming over different numeric types. This makes mathematical code more flexible and reusable.
 
 \subsection{Miscellaneous}
 \subsubsection{GitHub}
@@ -128,7 +143,7 @@ GitHub actions allow us to employ GitHub's servers to perform certain actions up
 As implied, we also use GitHub for hosting our documentation
 
 \subsubsection{rustfmt}
-Rustfmt \cite{bib:rustfmt} is used for automatically formatting our code based on a list of specifications. We also employ a console script to apply formatting to all files in the project (this script is ran by the formerly mentioned GitHub action upon request).
+Rustfmt \cite{bib:rustfmt} is used for automatically formatting our code based on a list of specifications. We also employ a console script to apply formatting to all files in the project, this script is ran by the previously mentioned GitHub action upon request.
 
 \section{Iterations}
-Since many parts of the code are so interlinked with each other, and since there is rarely a need for a massive overhaul of several files, you will see fewer clear iterations for any one component (say, the intake) than you will for the entirety of the program. To this extend, in contrast to the hardware part of the notebook, you will find that the best place to find the iteration of the software is found in the logs, rather than any individual subsystem (though a summary of changes will be provided in said chapters)
+Since many parts of the code are so interlinked with each other, and since there is rarely a need for a massive overhaul of several files, you will see fewer clear iterations for any one component say, the intake than you will for the entirety of the program. To this extent, in contrast to the hardware part of the notebook, you will find that the best place to find the iteration of the software is found in the logs, rather than any individual subsystem.

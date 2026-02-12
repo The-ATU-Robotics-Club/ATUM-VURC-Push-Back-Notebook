@@ -1,0 +1,187 @@
+\chapter{Odometry}
+
+\subsection{Odometry Background}
+
+Odometry is a method of estimating a robot’s position and orientation over time by integrating data from onboard sensors, typically wheel encoders and an inertial measurement unit (IMU). By measuring how far each wheel travels and how much the robot rotates, the robot can continuously estimate its pose in a global coordinate frame, usually expressed as $(x, y, \theta)$.
+
+Unlike open-loop motion commands that assume ideal movement, odometry allows the robot to track where it actually is on the field. This is especially important in competitive robotics environments where wheel slip, contact with field elements, or interactions with other robots introduce disturbances that cause deviations from the intended path.
+
+The VEXU Push Back field includes a neutral zone that both alliances are allowed to enter during autonomous. Because multiple robots may occupy this area simultaneously, physical contact or defensive pushing can occur. If the robot relies only on timed movements or fixed motor commands, being pushed even slightly can cause significant positional error and make subsequent autonomous actions unreliable.
+
+By using odometry, the robot can detect unintended changes in position and heading and correct for them in real time. When external forces push the robot off its intended trajectory, updated encoder and inertial measurements reflect this deviation, allowing the control system to re-align the robot with its target path. This makes autonomous routines more robust to interference and improves consistency when operating in shared or contested areas of the field.
+
+Overall, odometry provides a continuously updated estimate of the robot’s pose, enabling closed-loop path following, correction after contact, and more reliable autonomous performance in dynamic match conditions such as the Push Back neutral zone.
+
+\subsection{Implementation}
+
+Our odometry system estimates the robot pose
+\[
+(x, y, \theta)
+\]
+using two passive tracking wheels and an IMU. The tracking wheels measure displacement along two non parallel axes, while the IMU provides heading. Each update cycle computes the robot’s local translation $(\Delta x, \Delta y)$ and rotation $\Delta \theta$, then integrates those into the global pose.
+
+\subsubsection{Initialization}
+
+We start by storing the initial pose in shared memory and synchronizing the IMU heading to match the starting pose. Pose is stored in an \texttt{Rc<RefCell<...>>} so it can be safely shared and updated by an asynchronous task.
+
+\begin{lstlisting}[language=Rust]
+let pose = Rc::new(RefCell::new(starting_pose));
+imu.set_heading(starting_pose.h);
+\end{lstlisting}
+
+\subsubsection{Background Update Task}
+
+Odometry runs continuously in an asynchronous task. Each loop iteration reads sensor change, computes a local motion increment, and updates pose. We run at 100 Hz (10 ms delay), which provides responsive correction when the robot is pushed or slips.
+
+\begin{lstlisting}[language=rust]
+
+_task: spawn(async move {
+    loop {
+        ...
+        sleep(Duration::from_millis(10)).await;
+    }
+}),
+\end{lstlisting}
+
+\subsubsection{Sensor Measurements: Wheel Travel and Heading Change}
+
+At the beginning of each cycle, we read how far each tracking wheel has traveled since the last call. We also compute the change in heading using the IMU.
+
+\begin{lstlisting}[language=rust]
+let ds1 = side.traveled();
+let ds2 = forward.traveled();
+
+let heading = imu.rotation();
+let dh = heading - prev_heading;
+prev_heading = heading;
+\end{lstlisting}
+
+Here, \texttt{ds1} and \texttt{ds2} represent the raw wheel displacements. However, raw wheel displacement includes both translation and displacement caused by rotation about the robot center. The next step removes the rotation component.
+
+\subsubsection{Wheel Geometry: Axis Angle and Offset from Center}
+
+Each tracking wheel is defined by
+its axis angle $\phi$ in the robot frame
+and its position offset from the robot center $(o_x, o_y)$. These are used to compute how much each wheel would move purely due to robot rotation.
+
+\begin{lstlisting}[language=rust]
+let phi1 = side.angle();
+let phi2 = forward.angle();
+
+let offset1 = side.from_center();
+let offset2 = forward.from_center();
+\end{lstlisting}
+
+\subsubsection{Rotation Compensation}
+
+When the robot rotates by $\Delta \theta$, a point at offset $(o_x,o_y)$ traces a small arc. For small time steps, this produces an approximate linear displacement:
+
+\[
+\Delta x_{rot} \approx -\Delta\theta \cdot o_y
+\qquad
+\Delta y_{rot} \approx \Delta\theta \cdot o_x
+\]
+
+That displacement is then projected onto each wheel’s measurement axis to determine how much of the wheel travel came from rotation alone.
+
+\begin{lstlisting}[language=rust]
+let dx_rot1 = -dh.get::<radian>() * offset1.y;
+let dy_rot1 =  dh.get::<radian>() * offset1.x;
+
+let ds1_rot =
+    dx_rot1 * phi1.get::<radian>().cos() +
+    dy_rot1 * phi1.get::<radian>().sin();
+\end{lstlisting}
+
+We subtract that rotational contribution from the measured travel to isolate translation only:
+
+\begin{lstlisting}[language=rust]
+let ds1_corr = ds1 - ds1_rot;
+let ds2_corr = ds2 - ds2_rot;
+\end{lstlisting}
+
+This step matters a lot in real matches because rotational slip and contact in the neutral zone can create wheel motion that is not true translation. Removing the rotation component makes position tracking more stable during collisions and pushes.
+
+\subsubsection{Solving for Local Translation $(\Delta x,\Delta y)$}
+
+After rotation correction, we now have two scalar measurements:
+each wheel reports the component of the robot’s translation along its axis.
+
+If wheel axis angles are $\phi_1$ and $\phi_2$,
+then the measurement model is:
+
+\[
+ds_1 = \Delta x \cos(\phi_1) + \Delta y \sin(\phi_1)
+\]
+\[
+ds_2 = \Delta x \cos(\phi_2) + \Delta y \sin(\phi_2)
+\]
+
+This is a 2x2 linear system for $(\Delta x,\Delta y)$.
+Your code solves it analytically using the determinant
+\[
+\det = \sin(\phi_2 - \phi_1)
+\]
+and computes:
+
+\begin{lstlisting}[language=rust]
+let det = (phi2.get::<radian>() - phi1.get::<radian>()).sin();
+let inv_det = 1.0 / det;
+
+let dx = (s2 * ds1_corr - s1 * ds2_corr) * inv_det;
+let dy = (-c2 * ds1_corr + c1 * ds2_corr) * inv_det;
+\end{lstlisting}
+
+This produces $\Delta x$ and $\Delta y$ in the robot local frame for that time step.
+
+\subsubsection{Integrating into Global Pose}
+
+Finally, we rotate the local motion increment into the global field frame using the robot heading.
+To reduce integration error, we use the average heading over the time step:
+
+\[
+\theta_{avg} = \theta_{prev} + \frac{\Delta\theta}{2}
+\]
+
+Then we rotate and add:
+
+\[
+\begin{bmatrix}
+\Delta X \\
+\Delta Y
+\end{bmatrix}
+=
+\begin{bmatrix}
+\cos\theta_{avg} & \sin\theta_{avg} \\
+-\sin\theta_{avg} & \cos\theta_{avg}
+\end{bmatrix}
+\begin{bmatrix}
+\Delta x \\
+\Delta y
+\end{bmatrix}
+\]
+
+In code:
+
+\begin{lstlisting}[language=rust]
+let heading_avg = prev.h + dh / 2.0;
+
+x: prev.x + (heading_avg.cos() * dx + heading_avg.sin() * dy),
+y: prev.y + (-heading_avg.sin() * dx + heading_avg.cos() * dy),
+h: imu.heading(),
+\end{lstlisting}
+
+\subsubsection{Velocity Estimates}
+
+Because we know the loop period $\Delta t$, we can estimate local forward and sideways velocity, as well as angular velocity:
+
+\begin{lstlisting}[language=rust]
+let dt = prev_time.elapsed();
+vf: dx / Time::new::<second>(dt.as_secs_f64()),
+vs: dy / Time::new::<second>(dt.as_secs_f64()),
+omega: (dh / Time::new::<second>(dt.as_secs_f64())).into(),
+\end{lstlisting}
+
+These values can be used later for motion control (path following, feedforward, or state estimation), and they also provide a diagnostic for detecting pushes or unexpected disturbances.
+
+

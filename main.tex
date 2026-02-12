@@ -1,29 +1,19 @@
-\documentclass[]{ATUEngineeringNotebook}
-
-\addbibresource{bibliography.bib}
+\documentclass[]{ATUEngineeringNotebook} 
+\addbibresource{bibliography.bib} 
 \input{software/code/rust-listings.shy}
+\usepackage{emoji}
 \nocite{*}
-
 \begin{document}
 \pagestyle{plain}
-
 \frontmatter
-
 \raggedbottom
+\setcounter{tocdepth}{4}
 \tableofcontents
-\setcounter{tocdepth}{\defaulttocdepth}
-
-\mainmatter
-\mypart{Preface}{Ch}{preface} 
-
+\mainmatter \mypart{Preface}{Ch}{preface}
 \mypart{Hardware}{Ch}{hardware}
-
-\mypart{Engineering Drawings}{Ch}{Engineering Drawings}
-
-\mypart{Software}{Ch}{software/software}
-
+\mypart{Engineering Drawings}{Ch}{Engineering Drawings} 
+\mypart{Software}{Ch}{software/software} 
 \backmatter
-\renewcommand{\thechapter}{A}
+\renewcommand{\thechapter}{A} 
 \mypart{Appendix}{Appendix}{appendix/appendix}
-
 \end{document}

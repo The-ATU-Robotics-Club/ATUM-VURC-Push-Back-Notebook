@@ -1,0 +1,144 @@
+   \chapter{PID}
+
+\subsection{PID Control Background}
+
+PID control is a closed-loop feedback control method that is used to drive a system toward a desired target by continuously correcting the error. The controller computes an output based on the difference between a desired value (setpoint) and the current measured value.
+
+The error is defined as:
+\[
+e(t) = \text{setpoint} - \text{measured value}
+\]
+
+A PID controller consists of three components:
+
+\begin{itemize}
+    \item \textbf{Proportional (P):} Produces an output proportional to the current error. Larger errors result in stronger corrective action.
+    \item \textbf{Integral (I):} Accumulates error over time to eliminate steady-state offset.
+    \item \textbf{Derivative (D):} Reacts to the rate of change of error, providing damping and reducing overshoot.
+\end{itemize}
+
+The combined controller output is:
+\[
+u(t) = k_p e(t) + k_i \int e(t)\,dt + k_d \frac{de(t)}{dt}
+\]
+
+PID control is widely used in robotics because it allows systems to automatically correct disturbances, mechanical inconsistencies, and modeling error rather than relying on open-loop timing or fixed motor commands.
+
+\subsection{Why PID is Used in Autonomous Control}
+
+In a competition environment, robots rarely move exactly as commanded. Factors such as changes in battery voltage, friction variation, wheel slip, and contact with other robots can cause deviations from the intended motion.
+
+PID control enables the robot to continuously measure its current state, compare it to a target, and correct motion in real time. Instead of assuming that the robot reached a position or heading, the controller actively drives the error toward zero.
+
+This makes autonomous behavior significantly more consistent and repeatable across matches.
+
+\subsection{PID Control with Odometry}
+
+Odometry provides a continuous estimate of the global position of the robot $(x, y, \theta)$. While odometry determines where the robot is, PID control determines how the robot should move to reach a desired target.
+
+During autonomous routines, target positions and headings are defined in field coordinates. Odometry is used to compute the current positional error and the PID controllers generate motor commands to reduce that error over time.
+
+Because odometry updates the robot’s pose even after external disturbances, PID control can correct motion if the robot is pushed or deflected, particularly in the shared neutral zone during autonomous.
+
+When combined, odometry and PID form a closed-loop navigation system:
+\begin{itemize}
+    \item Odometry estimates the current position and heading
+    \item The error to the target is computed
+    \item PID generates corrective outputs
+    \item Motors respond to reduce error
+\end{itemize}
+
+This allows the robot to re-align itself after contact rather than continuing blindly along a preprogrammed path.
+
+\subsection{PID Controller Implementation}
+
+Our PID controller stores the tuned constants and internal state variables required for continuous control.
+
+\begin{lstlisting}[language=rust]
+pub struct Pid {
+    kp: f64,
+    ki: f64,
+    kd: f64,
+    integral_threshold: f64,
+    prev_error: f64,
+    integral: f64,
+}
+\end{lstlisting}
+
+The constants $k_p$, $k_i$, and $k_d$ define the relative strength of each control term. The controller also stores the accumulated integral value and the previous error for derivative computation.
+
+
+\subsubsection{Integral Threshold and Reset Logic}
+
+To prevent integral windup, the controller only accumulates integral error when the magnitude of error is below a defined threshold.
+
+\begin{lstlisting}[language=rust]
+if error.abs() < self.integral_threshold {
+    self.integral += error * dt;
+} else {
+    self.integral = 0.0;
+}
+\end{lstlisting}
+
+This prevents large transient errors from producing excessive integral buildup, which could otherwise cause overshoot or instability.
+If the error changes sign, indicating the robot has crossed the target, the integral term is reset:
+
+\begin{lstlisting}[language=rust]
+if error.signum() != self.prev_error.signum() {
+    self.integral = 0.0;
+}
+\end{lstlisting}
+
+This further improves stability and allows the controller to settle quickly at the target.
+
+If the error changes sign, indicating the robot has crossed the target, the integral term is reset:
+
+\begin{lstlisting}[language=rust]
+if error.signum() != self.prev_error.signum() {
+    self.integral = 0.0;
+}
+\end{lstlisting}
+
+This further improves stability and allows the controller to settle quickly at the target.If the error changes sign, indicating the robot has crossed the target, the integral term is reset:
+
+\begin{lstlisting}[language=rust]
+if error.signum() != self.prev_error.signum() {
+    self.integral = 0.0;
+}
+\end{lstlisting}
+
+This further improves stability and allows the controller to settle quickly at the target.
+
+\subsubsection{Derivative Term}
+
+The derivative term represents the rate of change of error:
+
+\begin{lstlisting}[language=rust]
+let derivative =
+    (error - self.prev_error) / dt.as_secs_f64();
+\end{lstlisting}
+
+This term predicts future error behavior and provides damping, reducing overshoot and oscillation when approaching the target.
+
+\subsubsection{PID Output Computation}
+
+The final controller output is computed as the weighted sum of the three components:
+
+\begin{lstlisting}[language=rust]
+error * kp +
+integral * ki +
+derivative * kd
+\end{lstlisting}
+
+This output is then used to command drivetrain or mechanism motion, driving the measured error toward zero.
+
+\subsection{Effect on Autonomous Accuracy}
+
+By pairing PID control with odometry-based position estimation, the robot operates entirely in closed loop. Odometry provides accurate state feedback, while PID continuously corrects deviations from desired motion.
+
+This combination significantly improves autonomous reliability, especially in the Push Back neutral zone where unintended contact may occur. If the robot is pushed off course, odometry detects the positional error and PID generates corrective outputs to return the robot to its intended trajectory.
+
+As a result, autonomous routines become more consistent, repeatable, and robust under real match conditions.
+
+
+

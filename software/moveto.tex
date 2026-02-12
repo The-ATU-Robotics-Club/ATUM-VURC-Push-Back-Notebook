@@ -1,0 +1,96 @@
+\chapter{Move-To-Point Controller}
+
+To drive to a field coordinate reliably, we implement a closed-loop \textbf{move-to-point} controller that uses odometry pose $(x,y,\theta)$ and two PID loops:
+\begin{itemize}
+    \item \textbf{Linear PID:} drives down the remaining distance to the target.
+    \item \textbf{Sideways PID (steering PID):} drives down the cross-track / heading-related error so the robot converges onto the line to the target.
+\end{itemize}
+
+This is more repeatable than timed driving because any disturbance (slip, battery changes, contact in the neutral zone) changes the measured pose, which updates the error, and the controller corrects in real time.
+
+\subsubsection{Computing the Position Error from Odometry}
+
+Each cycle we read the current pose from odometry and form the vector from the robot to the target:
+\begin{lstlisting}[language=rust]
+let pose = dt.pose();
+let position_error = Vec2::new(
+    (target.x - pose.x).get::<meter>(),
+    (target.y - pose.y).get::<meter>(),
+);
+let mut distance = position_error.length();
+\end{lstlisting}
+
+We also compute the \textbf{desired heading} to face the target based on the error vector angle:
+\begin{lstlisting}[language=rust]
+let target_h = Angle::new::<radian>(position_error.angle());
+let mut herror = wrap(target_h - pose.h);
+\end{lstlisting}
+Wrapping ensures the robot always chooses the shortest angular direction.
+
+\subsubsection{Projected Cross-Track Error (Steering Term)}
+
+Instead of turning in place first, we compute how ``off-line'' the robot is relative to the target direction by projecting the distance onto the perpendicular component:
+\[
+\text{cte} = d \sin(\Delta\theta)
+\]
+In code:
+\begin{lstlisting}[language=rust]
+let mut projected_cte = distance * herror.get::<radian>().sin();
+\end{lstlisting}
+
+If the target is behind the robot (heading error $> 90^\circ$), we flip signs so the controller behaves consistently (drive backward instead of trying to rotate nearly 180 degrees):
+\begin{lstlisting}[language=rust]
+if herror.abs() > Angle::HALF_TURN / 2.0 {
+    projected_cte *= -1.0;
+    distance *= -1.0;
+}
+\end{lstlisting}
+
+\subsubsection{Two PID Outputs: Forward + Steering}
+
+We compute:
+\begin{itemize}
+    \item \textbf{Steering output} from cross-track error (keeps the robot converging toward the target line),
+    \item \textbf{Linear output} from distance (drives progress toward the target).
+\end{itemize}
+
+\begin{lstlisting}[language=rust]
+let mut angular_output = self.sideways.output(-projected_cte, elapsed_time);
+
+let mut linear_output = self.linear
+    .output(distance, elapsed_time)
+    .clamp(-Motor::V5_MAX_VOLTAGE, Motor::V5_MAX_VOLTAGE);
+\end{lstlisting}
+
+\subsubsection{Heading-Based Scaling (Don’t Drive Hard When Misaligned)}
+
+To prevent charging forward while facing the wrong direction, we scale forward power by:
+\[
+s = |\cos(\Delta\theta)|
+\]
+So when the robot is aligned, $s \approx 1$; when it’s sideways, $s \approx 0$.
+
+\begin{lstlisting}[language=rust]
+let scaling = herror.get::<radian>().cos().abs();
+dt.arcade(linear_output * scaling, angular_output);
+\end{lstlisting}
+
+This makes the approach smoother and reduces overshoot near the target.
+
+\subsubsection{Timeout and Safety Stop}
+
+A timeout prevents the robot from getting stuck indefinitely if it cannot reach the target due to contact or obstruction:
+\begin{lstlisting}[language=rust]
+if start_time.elapsed() > timeout {
+    break;
+}
+\end{lstlisting}
+
+At the end, outputs are set to zero to fully stop:
+\begin{lstlisting}[language=rust]
+dt.set_voltages(0.0, 0.0);
+\end{lstlisting}
+
+\subsubsection{Why This Improves Autonomous with Odometry}
+
+Odometry provides continuous $(x,y,\theta)$ feedback, so the robot always knows its current error to the target even after disturbances. The move-to-point controller converts that error into forward and steering commands (two PID loops), allowing the robot to correct its path and still hit coordinates reliably in real match conditions, including the shared neutral zone.

@@ -1,0 +1,66 @@
+\chapter{Custom Velocity Controller}
+
+For mechanisms and drivetrain control, we support two velocity modes:
+\begin{itemize}
+    \item \textbf{Fallback (VEX built-in):} If no custom controller is configured, we use the motor’s internal velocity control.
+    \item \textbf{Custom controller:} When tuned, we compute a voltage command using a feedforward + PID loop for tighter, more predictable tracking.
+\end{itemize}
+
+\subsubsection{Controller Selection (Custom vs Built-in)}
+
+Each call to \texttt{set\_velocity()} iterates over all motors and either:
+(1) computes a voltage using our controller, or
+(2) calls the VEX velocity command directly.
+
+\begin{lstlisting}[language=rust]
+match self.motor_controller {
+    Some(mut controller) => { ... motor.set_voltage(voltage); }
+    None => { motor.set_velocity(velocity); }
+}
+\end{lstlisting}
+
+This design lets us keep the robot functional even before tuning, while allowing improved performance once the custom controller is calibrated.
+
+\subsubsection{Closed-Loop Velocity Using Motor Feedback}
+
+When the custom controller is enabled, we measure actual motor RPM and compute a voltage to reduce the velocity error:
+
+\begin{lstlisting}[language=rust]
+let motor_velocity = motor.velocity().unwrap_or_default();
+let voltage = controller.output(velocity as f64, motor_velocity, None);
+motor.set_voltage(voltage);
+\end{lstlisting}
+
+Using actual velocity feedback makes the system robust to battery voltage changes, friction variation, and load changes during match play.
+
+\subsubsection{Motor Controller: Feedforward + PID}
+
+Our \texttt{MotorController} combines:
+\begin{itemize}
+    \item \textbf{Feedforward (FF):} predicts the needed voltage for a desired speed/acceleration
+    \item \textbf{PID:} corrects any remaining error between target and actual velocity
+\end{itemize}
+
+\begin{lstlisting}[language=rust]
+pub fn output(&mut self, target_rpm: f64, actual_rpm: f64, acceleration: Option<f64>) -> f64 {
+    let error = target_rpm - actual_rpm;
+    let ff = self.kv + self.ks + acceleration.unwrap_or_default() * self.ka;
+    let pid = self.pid.output(error, Duration::from_millis(10));
+    ff + pid
+}
+\end{lstlisting}
+
+\paragraph{Feedforward terms.}
+The feedforward portion applies three tuned constants:
+\begin{itemize}
+    \item $k_s$ offsets static friction (helps the motor start moving consistently),
+    \item $k_v$ accounts for the voltage needed to maintain speed,
+    \item $k_a$ accounts for acceleration (optional, used when an acceleration estimate is available).
+\end{itemize}
+
+\paragraph{PID correction.}
+The PID term then drives the remaining velocity error toward zero, improving steady tracking and reducing oscillations compared to open-loop voltage commands.
+
+\subsubsection{Why This Helps Autonomous}
+
+Odometry tells us where the robot is and where it needs to go, but accurate autonomous also depends on the robot moving at predictable speeds. A tuned velocity controller makes motion more repeatable by keeping motor RPM close to the commanded value despite changing battery level and contact forces. This improves path following and turning consistency when paired with odometry-based control.

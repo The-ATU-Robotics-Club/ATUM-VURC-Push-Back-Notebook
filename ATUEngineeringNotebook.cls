@@ -34,13 +34,24 @@
 \RequirePackage[]{colortbl} % Used for coloring table rows. 
 \RequirePackage[figurewithin=chapter]{caption} % Used for changing how figures are counted.
 \RequirePackage[]{ulem} % Used for strike-through text. 
-% \RequirePackage[]{emoji} % Used for emojis.
+\RequirePackage[]{emoji} % Used for emojis.
 \RequirePackage[]{subcaption} % Used for placing subfigures within figures. 
 \RequirePackage[]{booktabs} % Used to make tables typical to typesetting.
 \RequirePackage[]{enumitem} % Used for changing the layout of lists. 
 
 
+\usepackage{amssymb} 
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{amsmath}
 
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+ 
 % ~~~~~~~~~~ GLOBAL DEFINITIONS ~~~~~~~~~~ %
 \gdef\season{2025-2026}
 \gdef\game{Push Back}

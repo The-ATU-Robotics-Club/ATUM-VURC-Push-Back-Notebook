@@ -1,0 +1,82 @@
+\chapter{Turn to Heading}
+
+To accurately rotate the robot to a desired heading during autonomous, we implement a turn controller using a PID loop on angular error. The controller commands the drivetrain with equal and opposite voltages so the robot rotates in place, and it terminates only when both angle error and angular velocity are small. This improves consistency because the robot does not stop while still spinning (which would cause overshoot).
+
+\subsubsection{Controller Structure}
+
+The \texttt{Turn} struct contains:
+\begin{itemize}
+    \item a PID controller for angular error,
+    \item an angular error tolerance (how close is ``good enough''),
+    \item an angular velocity tolerance (ensures the robot has settled).
+\end{itemize}
+
+\begin{lstlisting}[language=rust]
+pub struct Turn {
+    pid: Pid,
+    tolerance: Angle,
+    velocity_tolerance: AngularVelocity,
+}
+\end{lstlisting}
+
+\subsubsection{Turning Toward a Point}
+
+For aiming at a field location, we compute the target angle from the robot pose to the point, then reuse the same heading controller.
+
+\begin{lstlisting}[language=rust]
+pub async fn turn_to_point(&mut self, dt: &mut Drivetrain, point: Vec2<Length>, timeout: Duration) {
+    let pose = dt.pose();
+    let target = angular_distance(pose, point);
+    self.turn_to(dt, target, timeout).await;
+}
+\end{lstlisting}
+
+This is especially useful when odometry provides $(x,y,\theta)$, because the robot can turn to face goals/objects using its estimated field position rather than timed guesses.
+
+\subsubsection{Closed-Loop Turn-to-Angle}
+
+The main loop repeatedly:
+\begin{enumerate}
+    \item measures current heading $\theta$ from odometry,
+    \item computes wrapped angular error $e = \mathrm{wrap}(\theta_{target}-\theta)$,
+    \item runs PID to produce a turn command,
+    \item applies opposite voltages to left/right sides to rotate.
+\end{enumerate}
+
+\begin{lstlisting}[language=rust]
+let heading = dt.pose().h;
+let error = wrap(target - heading);
+let output = self.pid.output(error.get::<radian>(), elapsed_time);
+dt.set_voltages(output, -output);
+\end{lstlisting}
+
+Wrapping the error ensures the robot always turns the shortest direction (prevents rotating almost 360 degrees when only a few degrees are needed).
+
+\subsubsection{Settle Conditions and Timeout}
+
+Instead of stopping as soon as the angle error is small, we also require the robot's angular velocity to be small. This prevents stopping while the robot is still rotating fast, which reduces overshoot and makes final heading more repeatable.
+
+\begin{lstlisting}[language=rust]
+let omega = dt.pose().omega;
+if error.abs() < self.tolerance && omega.abs() < self.velocity_tolerance {
+    break;
+}
+\end{lstlisting}
+
+A timeout is included to prevent getting stuck if the robot cannot reach the target due to interference or wheel slip:
+
+\begin{lstlisting}[language=rust]
+if time > timeout {
+    break;
+}
+\end{lstlisting}
+
+Finally, motor outputs are zeroed at the end to ensure the drivetrain fully stops:
+
+\begin{lstlisting}[language=rust]
+dt.set_voltages(0.0, 0.0);
+\end{lstlisting}
+
+\subsubsection{Why This Improves Autonomous with Odometry}
+
+Odometry provides a continuously updated heading estimate even after contact or pushes. This turn controller uses that heading feedback to correct in real time, allowing the robot to re-align to its intended orientation (or face a point on the field) instead of relying on timed turns that drift with battery level, friction changes, and impacts.

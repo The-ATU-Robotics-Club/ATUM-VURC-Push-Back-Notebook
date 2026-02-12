@@ -1,0 +1,73 @@
+\chapter{Swing Controller}
+
+In addition to in-place turns, we implement a \textbf{swing turn} controller. A swing turn rotates the robot to a target heading while following an arc of a specified radius. This is useful when we want to reorient while also repositioning around an object or maintaining clearance, rather than pivoting exactly about the robot center.
+
+\subsubsection{Controller Overview}
+
+The swing controller uses a PID loop on \emph{heading error} (same concept as our turn controller), but converts the angular correction into \emph{left and right wheel velocities} based on a chosen turn radius and the drivetrain track width.
+
+\begin{lstlisting}[language=rust]
+pub struct Swing {
+    pid: Pid,
+    tolerance: Angle,
+    velocity_tolerance: AngularVelocity,
+}
+\end{lstlisting}
+
+\subsubsection{Closed-Loop Swing to Heading}
+
+Each update cycle:
+\begin{enumerate}
+    \item reads the current heading from odometry,
+    \item computes wrapped heading error,
+    \item runs PID to generate a steering command,
+    \item converts that command into left/right velocities for an arc turn.
+\end{enumerate}
+
+\begin{lstlisting}[language=rust]
+let heading = dt.pose().h;
+let error = wrap(target - heading);
+let output = self.pid.output(error.get::<radian>(), elapsed_time);
+\end{lstlisting}
+
+Wrapping ensures the robot always turns the shortest direction to the target heading.
+
+\subsubsection{Arc Kinematics: Radius and Track Width}
+
+A swing turn is defined by a turn radius $R$ (distance from the robot center to the instantaneous center of curvature) and the drivetrain track width $L$ (left-right wheel separation). For a given angular command, the left and right sides should move at different speeds:
+
+\[
+v_L \propto (R - \tfrac{L}{2}), \qquad
+v_R \propto (R + \tfrac{L}{2})
+\]
+
+The code implements this scaling directly:
+
+\begin{lstlisting}
+let length = dt.track();
+let left = output*(radius-length/2.0);
+let right = output*(radius+length/2.0);
+dt.set_velocity(left.get::<meter>() as i32, right.get::<meter>() as i32);
+\end{lstlisting}
+
+This produces a smooth, controllable arc whose tightness is set by \texttt{radius}. Larger radius behave closer to straight motion; smaller radius produce tighter swings.
+
+\subsubsection{Completion Conditions and Timeout}
+
+The swing ends when the robot is within an angular tolerance of the target heading:
+
+\begin{lstlisting}[language=rust]
+if error.abs() < self.tolerance {
+    break;
+}
+\end{lstlisting}
+
+A timeout is included to prevent the robot from getting stuck if it cannot reach the target due to contact, slip, or other match conditions:
+
+\begin{lstlisting}[language=rust]
+if time > timeout { break; }
+\end{lstlisting}
+
+\subsubsection{Why Swing Turns Help Autonomous with Odometry}
+
+Odometry provides a live estimate of heading $\theta$ and angular velocity $\omega$ even if the robot is disturbed. Using that feedback, the swing controller can continuously correct its arc path and finish at a repeatable final orientation. This is especially helpful in dynamic situations (e.g., shared neutral zone contact), where an open-loop arc turn would drift and miss its final angle.
