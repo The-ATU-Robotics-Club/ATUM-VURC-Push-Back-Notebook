@@ -99,8 +99,9 @@ impl Drivetrain {
     }
 
     pub fn angular_velocity(&self) -> AngularVelocity {
-        let vdiff =
-            self.wheel_circum.get::<meter>() * (self.left.velocity() - self.right.velocity()) / 60.0;
+        let vdiff = self.wheel_circum.get::<meter>()
+            * (self.left.velocity() - self.right.velocity())
+            / 60.0;
 
         AngularVelocity::new::<radian_per_second>(vdiff / self.track.get::<meter>())
     }
@@ -111,6 +112,10 @@ impl Drivetrain {
 
     pub fn set_pose(&mut self, pose: Pose) {
         self.odometry.set_pose(pose);
+    }
+
+    pub fn track(&mut self) -> Length {
+        self.track
     }
 }
 
