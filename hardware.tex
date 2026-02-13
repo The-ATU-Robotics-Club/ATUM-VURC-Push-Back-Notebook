@@ -464,7 +464,6 @@ We recognize that CAD and math cannot perfectly simulate complex field interacti
 Our workflow follows a strict cyclic process for each subsystem (Intake, Conveyor, Lift):
 
 
-[Image of engineering design cycle diagram]
 
 
 \begin{enumerate}
@@ -517,10 +516,10 @@ We evaluated two initial strategies for the chassis development.
     \textbf{Option A: \newline New Custom Build} & 
     (-) \textbf{Time Cost:} estimated 1-2 weeks for CAD and CNC machining of the new 10-motor architecture. \newline
     (-) \textbf{Risk:} Delays testing of the Intake/Lift, which are high-risk subsystems. & No \\ \hline
-    \textbf{Option B: \newline Reuse Legacy Drive} & 
+    \textbf{Option B: \newline Reuse High-Stakes Drivetrain} & 
     (+) \textbf{Speed:} Immediate availability. "Last Year's" robot is already assembled and proven reliable. \newline
     (+) \textbf{Focus:} Allows the mechanical team to dedicate 100\% of resources to the Scoring Mechanism prototype. \newline
-    (-) \textbf{Compromise:} The old drive (Legacy 8-Motor) is less powerful than our VURC target (10-Motor), but sufficient for testing. & \textbf{Yes} \\ \hline
+    (-) \textbf{Compromise:} The old drive (8-Motor) is less powerful than our target (10-Motor), but sufficient for testing. & \textbf{Yes} \\ \hline
     \end{tabular}
 \end{table}
 
@@ -762,12 +761,11 @@ Roller Dia. (in) & Attempts (n) & Scored (fully in) & Missed & Success (\%) & No
 
 \subsubsection{Solution Brainstorm}
 
-Furthermore, to address the dead-zones that were found in the system, the current design was revisioned as seen in \ref{fig:OG_Master_Sketch} in which a constant radius ramp was brainstormed that would lead to a constant path of compression on the ball allowing us to fine tune friction, with jamming and dead-zones all in one. 
-
+Furthermore, to address the dead-zones that were found in the system, the current design was revisioned as seen in \ref{fig:OG_Master_Sketch} in which a constant radius ramp was brainstormed that would lead to a constant path of compression on the ball allowing us to fine tune friction, with jamming and dead-zones all in one. For this design, we will use a 28\degree straight ramp that ends at the beginning of the ramp curve.
     \begin{figure}  [H]
         \centering
-        \includegraphics[width=0.5\linewidth]{images/Intake/Original Master Sketch.jpg}
-        \caption{Caption}
+        \includegraphics[width=0.5\linewidth]{images/Intake/Iteration2.png}
+        \caption{Geometry Proposal for Iteration 2}
         \label{fig:OG_Master_Sketch}
     \end{figure}
 
@@ -799,7 +797,7 @@ To assume the right position for the first roller, a custom print was made in or
 \subsection{Top Stage}
 
     \subsubsection{Iteration 2}
-    With the bottom stage sorted out, Custom prints were used on the stop stage in order to achieve a desired geometry for the 1st iteration. 
+    The top stage will be drastically different than iteration 1. With this new design, we seek to solve a critical gap problem of iteration 1 through the use of flex wheels. One of the main problems with iteration 1 is that our upper stage would have a tendency to spit balls out accidentally. With the bottom stage sorted out, Custom prints were used on the stop stage in order to achieve a desired geometry for the 1st iteration. 
 
 \begin{figure} [H]
     \centering
@@ -1244,11 +1242,6 @@ Following our testing and calculations we have a increase of 64\% in the coeffic
     Redesigning last years brake system, we arrive at \ref{fig:gear_grabber_brake_attachment}. \ref{fig:gear_grabber} is a component that we use to catch the teeth of the gears in order to remove any motion in the gear. Although \ref{fig:brake_attachment} is the point of attachment to the sliding gear mesh and the piston to the chassis without interference with other systems. 
     \newline
 
-    
-
-
-
-
 
     
     \subsection{Full Integration}
@@ -1324,7 +1317,75 @@ Following our testing and calculations we have a increase of 64\% in the coeffic
     \ref{fig:Drivetrain Half} shows a fully assembled half of the drivetrain with placement/fixture point for every bolt and axle needed from the prototype bot that transitioned to the senior design. This allows for very limited problems when designing and building as can already be seen in comparison in the amount of problems found in the prototype chapter vs the senior design chapter. 
     \newline
 
-    
+    \subsubsection{Bracing Components}
+
+        This section covers components made for the drivetrain in order to enhance the structure of it, along with bringing the design into a functional state. 
+
+
+            \paragraph{Back Brace}
+
+            
+           \textbf{Overview:} Working from last year, the team knew that a component was needed in order to fully make our drivetrain rigid and square. However, with a fully custom bot it provides unique challenges on how do we integrate a custom piece with no known attachment points? This was solved in our prototype design by utilizing the prototype bot we eliminate that problem.
+            \newline
+            
+           \textbf{Design:} when designing the drivetrain a initial cap was made in the back in order to box each side of the drive as seen in \ref{fig:Originial Chassis Block}. Although it did box each side it did nothing to limit the row in the drivetrain and did not provide a way to attach each half together.
+            \newline
+
+        \begin{figure} [H]
+            \centering
+            \includegraphics[width=0.5\linewidth]{images/Senior Design/oringial Chassis block.png}
+            \caption{Initial cap used for the drivetrain}
+            \label{fig:Originial Chassis Block}
+        \end{figure}
+
+        \textbf{Design Iteration 2:} After the initial design a bar was added between each half as seen in \ref{fig:Chassic Block Stretch Method}. This attached each half together allowing for a functional drivetrain as a whole. However it still allowed more play then desired by a team and following placement of components on the prototype a few designs needed to be added in order to meet the same geometry and sizing. 
+        \newline
+
+        
+        \begin{figure} [H]
+            \centering
+            \includegraphics[width=0.5\linewidth]{images/Senior Design/Rear chassis block stretch method .png}
+            \caption{Added brace in between each block}
+            \label{fig:Chassic Block Stretch Method}
+        \end{figure}
+
+
+        \textbf{Design Iteration 3:}  Following a finalized design on the prototype each component was added to back brace in order to simplify construction and manufacturing. For example, in \ref{fig:V1 rear chassis block} we added mounting positions for the ramp along with a attachment point for the intake ramp. Bracing was also added in order to provide support to the span of the brace in order to reduce bowing along with a point added in the center to attach our odometry system. 
+        
+
+        \begin{figure} [H]
+            \centering
+            \includegraphics[width=0.5\linewidth]{images/Senior Design/Final rear chassis block.png}
+            \caption{V1 of the finalized rear chassis block}
+            \label{fig:V1 rear chassis block}
+        \end{figure}
+
+        \textbf{Design Iteration 4:} In the final iteration of the rear chassis block we took inspiration from a car. For example a car rear bumper is made to crumble in order to reduce stress. However, following the logic of a truck where the rear bumper is backed by the frame. This logic can be seen in \ref{fig:V2 rear Chassis Block} where we subtracted the thickness of the rear chassis block and added a metal bumper made of aluminum in order to absorb impacts and provide a rigid backbone to the whole print as seen in \ref{fig:Aluminium backbone}.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth,height=0.22\textheight,keepaspectratio]{images/Senior Design/Final Final Rear Chassis Block.png}
+        \caption{V2 of final rear chassis Block}
+        \label{fig:V2 rear Chassis Block}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth,height=0.22\textheight,keepaspectratio]{images/Senior Design/Full back brace assembly.jpg}
+        \caption{Assembled back brace with aluminum backbone}
+        \label{fig:Aluminium backbone}
+    \end{subfigure}
+    \caption{Rear chassis block and back brace assembly}
+    \label{fig:rear_block_and_backbrace}
+\end{figure}
+
+        \paragraph{Chassis Block}
+        
+
+
+
 
 
 \section{Lower Stage}
@@ -1406,11 +1467,108 @@ Following our testing and calculations we have a increase of 64\% in the coeffic
 
         The full design was constrained and tolerance as seen in \ref{fig:Bottom stage assembly} this allowed us to create custom spacers that would reduce the overall weight on the bot and for a quicker assembly when building. This also allowed us to plan how to run chain and sprockets in order to fully drive the lower stage fully. 
 
-        
+\section{Odometry}
     
+To accurately track our robots' movement across the field during the autonomous and driver control periods, we had to come up with an improved method of odometry. In previous seasons, our team has used the same wheel encoders with success but had trouble with the overall placement and design of the wheel module. Problems with our last season's odometer pods were that they were too bulky in size, lacked stroke length, and were too difficult to integrate into an existing chassis. We knew that we wanted to create a completely modular design that's easy to install on any configuration. To eliminate these issues, our team had to switch to a more custom and universal mechanism that could allow our tracking to work nearly perfectly.
+\newline
+
+    When brainstorming for this new iteration we came up with the most important issues that the new design would address:
+\begin{itemize}
+    \item Reduce the footprint that pods take up on the underside of the chassis
+    \item Increase design durability without sacrificing size constraints
+    \item Allow for more diverse mounting locations
+    \item Decrease unnecessary slop with wheel and encoder rotations
+    \item Increase the stroke length so that the odometers will always make contact with the ground even while the chassis is elevated
+\end{itemize}
+
+These improvements would allow the robots to accurately track their position relative to the field and game elements even when an unexpected event occurs such as being lifted up by another bot or game element. From our experience, it is best to design every subassembly to perform under any conditions so the drivers don't have to worry about mechanical failure. With past odometer assemblies being fragile, we knew durability would be a characteristic to focus on.
+\newline
+
+\subsubsection{1. Problem Statement}
+
+Standard omnidirectional wheels (including Mecanum and standard Omni-wheels) often suffer from "discontinuous contact" with the ground due to the gaps between passive rollers. This discontinuity creates vertical and horizontal vibrations during operation, which can degrade sensor accuracy (particularly odometry and IMU readings) and reduce traction consistency.
+\newline
+
+\textbf{Objective:} Design a custom wheel that maintains continuous ground contact to minimize vibration and increase the surmountable bump height, improving the robot's stability and climbing ability.
+\newline
+
+\subsubsection{2. Research \& Technical Justification}
+
+Our design is grounded in the research paper \textit{"Design of Continuous Alternate Wheels for an Omnidirectional Mobile Robot"} by Kim et al. (2003).
+
+\begin{itemize}
+    \item \textbf{The Concept:} The paper proposes a "Continuous Alternate Wheel" (CAW) where large and small rollers are arranged alternately around the hub. Unlike standard designs where rollers are spaced apart, the CAW ensures that as one roller leaves the ground, the next one (of a different radius/position) is already making contact.
+
+    \item \textbf{Design Math:} The paper establishes that the geometry of the wheel relies on the number of rollers and the intersection of their profiles. While the paper explores designs with n=4 and n=6, we have adapted this theory to a 5-roller configuration to balance roller size with the complexity of the printed assembly.
+
+    \item \textbf{Gap Minimization:} The primary goal of this geometry is to eliminate the gap between rollers. As stated in the research, "this feature of no gap... is important in reduction of vibration during the wheel operation".
+\end{itemize}
+\newline
+
+\subsubsection{3. Design Specification \& Implementation}
+
+We translated the theoretical CAW model into a manufacturable design using 3D printing and laser-cut manufacturing techniques available to our VexU team.
+
+\paragraph{A. Component Architecture}
+
+\begin{itemize}
+    \item \textbf{Hub \& Spokes (PLA):}
+    \begin{itemize}
+        \item We designed 5 custom PLA spokes that serve as the central skeleton of the wheel.
+        \item \textit{Function 1:} These spokes act as the retainer for the "inner" rollers (standard omni-wheel rollers).
+        \item \textit{Function 2:} The outer ends of each spoke are geometrically shaped to project the inner race geometry for the bearings. This allows the spoke itself to act as the stationary axle for the outer TPU rollers.
+    \end{itemize}
+    \item \textbf{Outer Rollers (TPU):}
+    \begin{itemize}
+        \item \textbf{Material:} Printed in TPU (Thermoplastic Polyurethane) to provide high friction and impact dampening.
+        \item \textbf{Innovation:} These rollers feature \textbf{print-in-place bearings}. Instead of pressing in commercial bearings, the bearing geometry is printed directly inside the TPU roller during fabrication. This reduces part count and allows for custom bearing sizing that perfectly matches the PLA spoke projection.
+        \item \textbf{Geometry:} The outer roller profile follows the "barrel" shape required to match the wheel circumference, ensuring the transition from inner to outer roller is smooth.
+    \end{itemize}
+    \item \textbf{Containment Plates (Stainless Steel):}
+    \begin{itemize}
+        \item Two \textbf{16-gauge stainless steel plates} sandwich the entire assembly.
+        \item These plates handle the structural load, preventing the PLA spokes from flexing under the robot's weight. This addresses the concern raised in the research that "a urethane roller is not solid enough to prevent deformation" without proper support.
+    \end{itemize}
+\end{itemize}
+
+\paragraph{B. Fastening}
+
+The assembly is compressed and secured using \textbf{M2 bolts}, passing through the steel plates and PLA spokes. This creates a rigid "composite" structure where the steel takes the tension/compression and the printed parts handle the complex geometry.
+\newline
+
+\subsubsection{4. Prototype \& Construction}
+
+The following images detail the construction process of the CAW module.
+
+\textbf{Figure 1: Bearing \& Roller Integration}
 
 
+\textit{Description:} A close-up of the custom TPU outer roller. The print-in-place bearing is visible in the center. The use of TPU allows the roller to deform slightly over obstacles, improving traction, while the internal geometry remains rigid enough to rotate freely on the PLA spoke.
+\newline
 
+\textbf{Figure 2: Final Assembly}
+
+
+\textit{Description:} The fully assembled Continuous Alternate Wheel. You can see the alternating pattern of the 5 larger TPU rollers (black, outer) and the 5 smaller rollers (grey, inner) retained by the PLA spokes. The stainless steel plates visible in the center hub bind the spokes together, ensuring the wheel can withstand the torque requirements of competitive play.
+\newline
+
+\subsubsection{5. Expected Performance \& Future Testing}
+
+Based on the FEM (Finite Element Method) analysis in the source text, we expect the stress distribution to be highest at the supporter of the outer roller. Our use of 16-gauge steel plates specifically addresses this by reinforcing the hub area.
+\newline
+
+\textbf{Testing Plan:}
+
+\begin{enumerate}
+    \item \textbf{Vibration Test:} Drive the robot on hard tiles and measure accelerometer noise compared to standard omni-wheels.
+    \item \textbf{Bump Test:} Verify the wheel's ability to cross Vex field barriers (e.g., tape lines, small obstacles) without significant heading deviation, testing the "surmountable bump" theory.
+    \item \textbf{Durability:} Stress test the print-in-place bearings under load to ensure the TPU/PLA interface does not degrade over time.
+\end{enumerate}
+\newline
+
+\subsubsection{6. Conclusion}
+
+This design successfully implements the Continuous Alternate Wheel theory  into a VexU-legal form factor. By utilizing hybrid manufacturing (3D printing + laser cutting), we have created a wheel that theoretically offers superior smoothness and traction compared to off-the-shelf components.
 
 
 
