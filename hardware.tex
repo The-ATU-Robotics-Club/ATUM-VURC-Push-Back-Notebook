@@ -4,7 +4,7 @@
 \chapter{Early Season}
 
 \section{Design}
-This section documents the proposed design solutions for the VURC ``Push Back'' challenge. We analyze well-known mechanisms, highlight their strengths and weaknesses, and define the architecture for our two robots. This chapter will be split into a total of three overall sections \textbf{Design}, \textbf{Production}, and \textbf{Logs.} From this, we will be able to effectivity explain any brainstorming from the beginning of the design to the final product. 
+This section documents the proposed design solutions for the VURC ``Push Back'' challenge. We analyze well-known mechanisms, highlight their strengths and weaknesses, and define the architecture for our two robots. This chapter will be split into a total of three overall sections \textbf{Design}, \textbf{Production}, and \textbf{Logs.} From this, we will be able to effectivity explain any brainstorming from the beginning of the design to the final product.
 \newline 
 
 \subsection{Design Philosophy}
@@ -12,7 +12,6 @@ As a VURC team, we operate under the freedoms of Appendix C, specifically rule \
 
 \begin{figure}[H]
     \centering
-    % Placeholder for the image of the rule from the manual
     \includegraphics[width=0.95\textwidth]{images/Rules/VURC 4.png}
     \caption{Rule $<$VUR4$>$ Definition: Raw Stock Allowances}
     \label{fig:vur4_rule}
@@ -778,7 +777,7 @@ Following the initial sketch and brainstorm, a more realistic design sketch was 
     \begin{figure}  [H]
         \centering
         \includegraphics[width=0.5\linewidth]{images/Intake/CAD master sketch.png}
-        \caption{Caption}
+        \caption{Iteration 2 Bottom Stage Geometry Sketch}
         \label{fig:Master_SKetch_V1}
     \end{figure}
 
@@ -797,7 +796,7 @@ To assume the right position for the first roller, a custom print was made in or
 \subsection{Top Stage}
 
     \subsubsection{Iteration 2}
-    The top stage will be drastically different than iteration 1. With this new design, we seek to solve a critical gap problem of iteration 1 through the use of flex wheels. One of the main problems with iteration 1 is that our upper stage would have a tendency to spit balls out accidentally. With the bottom stage sorted out, Custom prints were used on the stop stage in order to achieve a desired geometry for the 1st iteration. 
+    The top stage will be drastically different than iteration 1. With this new design, we seek to solve a critical gap problem of iteration 1 through the use of flex wheels. One of the main problems with iteration 1 is that our upper stage would have a tendency to spit balls out accidentally when pivoted to the height required to score on the long goal. This is due to not pivoting about the largest sprocket on the robot. For context, the previous iteration would start with the upper stage sprockets parallel with the largest sprocket on the bottom stage. However, the upper stage frame did not pivot about the center of this sprocket. Instead, the upper stage pivoted on a tower that was positioned roughly 3" back. With this geometry, the gap between the final bottom stage sprocket and the first upper stage sprocket would grow as the angle increased. Thus, a \textit{deadzone} would appear between these two, which was not consistent nor ideal. It is worth noting however, that as this geometry allowed the robot to have increased reach that equated to the size of the gap. Additionally, we seek to make the upper stage a four bar that pivots about the largest sprocket in the system. This sprocket will be called the \textit{pivot sprocket}. The four bar linkage will be wider in the bottom to members to accommodate the gearbox that will continuously power all the sprockets together from the two motors on the bottom stage. The two upper members of the four bar linkage will be more narrow than the bottom two. By making the four bar narrower on the top, we want the the narrow section to effectively funnel the balls so that the upper stage is less prone to jamming. Moreover, making the upper stage a four bar will allow us to have an indexer mechanism that will remain perpendicular to the field tiles in any scoring position. This four bar however, will not have the compression hood mounted on the top linkage, but rather mounted on standoffs on the bottom linkage. In doing this, compression can remain the same regardless of the upper stage angle as seen in \ref{fig:V1_Top_Stage}.
 
 \begin{figure} [H]
     \centering
@@ -843,11 +842,18 @@ A new ramp was added to replace the abs piece; this was done in order to start s
     \subsubsection{Solution Brain Storm}
     Instead of fixed points, we could use TPU connection points that would allow more movement than a rigid material.
 
-\subsection{Bottom stage}
-
     \subsubsection{Iteration 3}
-
-        A New ramp was made following the problems in iteration 2 in order to have a continuous curve for the pivoting top stage
+    While innovative, testing of Iteration 2 demonstrated that rubber band rollers are superior to small flex wheels for our intake mechanism. Consequently, we have decided to significantly revise the geometry. Analysis of the first two iterations indicates that the optimal sprocket positions lie within a 1" diameter of their current coordinates. We are confident that fine-tuning these sprocket locations within this tolerance will resolve the jamming issues while maintaining target performance. A rough drawing was created to illustrate the path that the team wants to proceed in and it can be seen in \ref{fig:Iteration2vs3}.
+    
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/Intake/Original Master Sketch.jpg}
+    \caption{Iteration 2 geometry vs. Iteration 3 proposed geometry}
+    \label{fig:Iteration2vs3}
+\end{figure}
+    
+    
+    A New ramp was made following the problems in iteration 2 in order to have a continuous curve for the pivoting top stage
 
 \begin{figure}[H]
     \centering
@@ -868,7 +874,7 @@ A new ramp was added to replace the abs piece; this was done in order to start s
 \end{figure}
 
     \newpage
-    New on cloud mech hat as used in order to have compression when either the ball is at its minimum radius and maximum radius, allowing us to have consistent pressure on the main pivoting. 
+    New "oncloud" mech that was used in order to have compression when either the ball is at its minimum radius and maximum radius, allowing us to have consistent pressure on the main pivoting. 
 
   \begin{figure}[H]
     \centering
@@ -893,7 +899,7 @@ A new ramp was added to replace the abs piece; this was done in order to start s
 
     \subsubsection{Iteration 3}
 
-        Reworked stop stage without 3D printed arms, added 3D printed bearings, and redid rollers for compression along with a continuous curve ramp. 
+        Reworked stop stage without 3D printed arms, added 3D printed bearings, and redid rollers for compression along with a continuous curve ramp. This continuous ramp, slides along our "oncloud", akin to shingles. This allows for compression to be the same along the curve of the bot regardless if the upper stage is up or down.
         
 \begin{figure}[H]
     \centering
@@ -923,26 +929,32 @@ A new ramp was added to replace the abs piece; this was done in order to start s
 
         \begin{itemize} 
             \item  Blocks had a tendency to offset causing blocks to be side by side leading to multiple issues
-            \item  The original design for the pivot utilized two screw joints on each side of the pivot using a brass insert to rotate. However, this lead to the 3d print to become reamed out.
+            \item  The original design for the pivot utilized two screw joints on each side of the pivot using a brass insert to rotate. However, this inevitably caused to PLA sprocket's center to get reamed out as seen in 
         \end{itemize}
-    
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/Intake/Reamed Out Sprocket.jpg}
+        \caption{Damaged \textit{pivot sprocket} with brass instert}
+        \label{fig:ReamedSprocket}
+    \end{minipage}\hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/Intake/Reamed Out Sprocket 2.jpg}
+        \caption{Reamed \textit{Pivot sprocket}}
+        \label{fig:ReamedSprocket2}
+    \end{minipage}
+\end{figure}
     \subsubsection{Design Solutions}
-        We plan to change the geometry of the curve so we can fit an extra ball, hopefully two. We also plan to add a door mechanism that will make it to where we can shoot out any undesirable colors and also have a front to back option for scoring on the top middle goal.
+        We plan to optimize the intake curvature to increase capacity by one to two additional balls. Additionally, we will integrate a sorting "door" mechanism. This system will allow us to eject opposing alliance colors and provide a pass-through option to score on the high goal from either a front or back approach.
 
-        A solution was proposed that a polycarbonate guide be added to the stop stage and pivot in order to guide the balls down the stage reducing the chances of offsetting. While the the original pivot worked the reality of a component being able to be fatigued and wore down so easily did not bode well 
-
+        To prevent balls from offsetting during transfer, we proposed adding a polycarbonate guide to the top stage pivot. However, the current pivot design—relying on a standard VEX screw joint through the sprocket—is problematic. The bending moment applied by the upper stage creates excessive friction on the sprocket, inhibiting rotation. We must design a solution that isolates the structural pivot force from the rotating sprocket to ensure smooth operation.
     \subsubsection{Solution Brain Storm}
-        
-    
-        
-
-\subsection{Bottom Stage}
-
+        Building on our success with custom wheels, we intend to fabricate a custom aluminum axle for the central pivot, adapting the design shown in \ref{fig:traction_axle}. By lathing an axle that is tapped on both ends, we can mount it as a rigid structural member—effectively treating it as a reinforced standoff. Crucially, this configuration decouples the pivot loads from the sprocket rotation (provided the sprockets ride on independent bearings). This isolation is essential, as we anticipate the upper stage will endure significant stress, particularly during descoring maneuvers.
     \subsubsection{Iteration 4}
-
-
-
-
+        Iteration 4 will retain the sprocket geometry established in Iteration 3 because testing confirmed its efficacy. The primary failures of the previous iteration were attributed to the pivot joint instability, the absence of a color sorter, and ball jamming. We hypothesize that the jamming issues stem from the static compression surfaces, such as the ABS curve, rather than the sprocket layout. Consequently, we will focus on tuning these static geometries and investigating alternative materials to reduce friction along the ball path.
+        
 \subsection{Top Stage}
 
     With the upper stage starting to reach its final prototype it was decided that a polycarbonate piece would be used to align the blocks from the pivot to the upper stage in order to form a more coherent flow through the bot. 
@@ -1381,11 +1393,64 @@ Following our testing and calculations we have a increase of 64\% in the coeffic
     \label{fig:rear_block_and_backbrace}
 \end{figure}
 
-        \paragraph{Chassis Block}
+        \paragraph{Chassis Block and Cross Bar}\mbox{}\\
+
+        Taking another note from last year, although having a back brace helps reduce sway and play adding another brace closer to the front almost eliminates it entirely. However, the same as the back brace developing a method to attach the brace is the majority of the problem. 
+        \newline
+
+        \textbf{Chassis block Iteration 1:} When first designing the chassis block with how limited space was in between each will it would be hard to design around it. Heatset inserts were used in order to attach it to both the inner and outer drive plates while the outcropping on top of the main block as seen in \ref{fig:rear_block_and_backbrace} was used in order to align the whole setup using the outer part of the drive bearings located on the out plate as seen in \ref{fig:Drivetrain Half}
         
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.5\linewidth]{images/Senior Design/Chassis Block.png}
+            \caption{3D Printed insert between wheels in order to attach a cross bar}
+            \label{fig:Chassis Block}
+        \end{figure}
 
+        as seen in\ref{fig:Attached Chassis Block} the block squeezes in between each wheel well and perfectly aligns both sides of the drive and provides a attachment points for a crossbar. 
 
+        \begin{figure} [H]
+            \centering
+            \includegraphics[width=0.5\linewidth]{images/Senior Design/Attached Chassis Block.png}
+            \caption{Constrained chassis block}
+            \label{fig:Attached Chassis Block}
+        \end{figure}
 
+    \textbf{Cross Bar Iteration 1:} The design for the initial cross bar was simplistic in nature it was made in order to attach both sides and have a functional drivetrain up in running without compromising on integrity and overall rigidity. This cross bar can be seen in \ref{fig:V1 Cross Bar} where the holes on either end where made in order to attach the cross bar to the chassis block via heat-set inserts.
+
+    \begin{figure} [H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{images/Senior Design/Cross bar v1.jpg}
+        \caption{V1 of the senior design cross bar}
+        \label{fig:V1 Cross Bar}
+    \end{figure}
+
+        \textbf{Cross Bar Iteration 2:} The innovations made to Iteration 2 were mostly on accident. For example iteration two added a chamfer to the bottom edge of the cross bar, this was added due to how perfectly in level the bar was with the parking zone. So a chamfer was added in order to help the bot lift in order to park. While counter sunk bolts where added in order to fully make the bottom of the bot flush and eliminate the parking barrier being caught on bolts. all of these features can be seen in \ref{fig:V2 Cross Bar}. 
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{images/Senior Design/Cross bar v2.jpg}
+        \caption{V2 of the senior design cross bar}
+        \label{fig:V2 Cross Bar}
+    \end{figure}
+
+        \textbf{Cross Bar Iteration 3:} The only iterations added to version 3 were holes added to the center in order to attach a ramp to the bot these changes can be seen in \ref{fig:V3 Cross Bar}.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{images/Senior Design/Cross bar v3.jpg}
+        \caption{V3 of the senior design cross bar}
+        \label{fig:V3 Cross Bar}
+    \end{figure}
+
+     \textbf{Cross Bar Iteration 4:} This iteration 4 is currently the final iteration for the cross bar. It brought in closer the ramp attachment points along with added four points in order to attach a railing mount in for our match loading mechanism. 
+
+    \begin{figure} [H]
+        \centering
+        \includegraphics[width=0.75\linewidth]{images/Senior Design/Final Cross Bar.png}
+        \caption{Final iteration of cross bar}
+        \label{fig:Final Cross Bar}
+    \end{figure}
 
 
 \section{Lower Stage}
@@ -1498,9 +1563,9 @@ Our design is grounded in the research paper \textit{"Design of Continuous Alter
 
 \begin{itemize}
     \item \textbf{The Concept:} The paper proposes a "Continuous Alternate Wheel" (CAW) where large and small rollers are arranged alternately around the hub. Unlike standard designs where rollers are spaced apart, the CAW ensures that as one roller leaves the ground, the next one (of a different radius/position) is already making contact.
-
+\newline
     \item \textbf{Design Math:} The paper establishes that the geometry of the wheel relies on the number of rollers and the intersection of their profiles. While the paper explores designs with n=4 and n=6, we have adapted this theory to a 5-roller configuration to balance roller size with the complexity of the printed assembly.
-
+\newline
     \item \textbf{Gap Minimization:} The primary goal of this geometry is to eliminate the gap between rollers. As stated in the research, "this feature of no gap... is important in reduction of vibration during the wheel operation".
 \end{itemize}
 \newline
@@ -1521,35 +1586,46 @@ We translated the theoretical CAW model into a manufacturable design using 3D pr
     \item \textbf{Outer Rollers (TPU):}
     \begin{itemize}
         \item \textbf{Material:} Printed in TPU (Thermoplastic Polyurethane) to provide high friction and impact dampening.
-        \item \textbf{Innovation:} These rollers feature \textbf{print-in-place bearings}. Instead of pressing in commercial bearings, the bearing geometry is printed directly inside the TPU roller during fabrication. This reduces part count and allows for custom bearing sizing that perfectly matches the PLA spoke projection.
+        \item \textbf{Innovation:} These rollers feature print-in-place bearings. Instead of pressing in commercial bearings, the bearing geometry is printed directly inside the TPU roller during fabrication. This reduces part count and allows for custom bearing sizing that perfectly matches the PLA spoke projection.
         \item \textbf{Geometry:} The outer roller profile follows the "barrel" shape required to match the wheel circumference, ensuring the transition from inner to outer roller is smooth.
     \end{itemize}
-    \item \textbf{Containment Plates (Stainless Steel):}
+    \item Containment Plates (Stainless Steel)\textbf{:}
     \begin{itemize}
-        \item Two \textbf{16-gauge stainless steel plates} sandwich the entire assembly.
+        \item Two 16-gauge stainless steel plates sandwich the entire assembly.
         \item These plates handle the structural load, preventing the PLA spokes from flexing under the robot's weight. This addresses the concern raised in the research that "a urethane roller is not solid enough to prevent deformation" without proper support.
     \end{itemize}
 \end{itemize}
 
 \paragraph{B. Fastening}
 
-The assembly is compressed and secured using \textbf{M2 bolts}, passing through the steel plates and PLA spokes. This creates a rigid "composite" structure where the steel takes the tension/compression and the printed parts handle the complex geometry.
+The assembly is compressed and secured using M2 bolts, passing through the steel plates and PLA spokes. This creates a rigid "composite" structure where the steel takes the tension/compression and the printed parts handle the complex geometry.
 \newline
 
 \subsubsection{4. Prototype \& Construction}
 
 The following images detail the construction process of the CAW module.
-
-\textbf{Figure 1: Bearing \& Roller Integration}
-
-
-\textit{Description:} A close-up of the custom TPU outer roller. The print-in-place bearing is visible in the center. The use of TPU allows the roller to deform slightly over obstacles, improving traction, while the internal geometry remains rigid enough to rotate freely on the PLA spoke.
 \newline
 
-\textbf{Figure 2: Final Assembly}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/Senior Design/TPU Bearing roller.jpg}
+    \caption{Bearing and Roller Integration}
+    \label{fig:placeholder}
+\end{figure}
 
 
-\textit{Description:} The fully assembled Continuous Alternate Wheel. You can see the alternating pattern of the 5 larger TPU rollers (black, outer) and the 5 smaller rollers (grey, inner) retained by the PLA spokes. The stainless steel plates visible in the center hub bind the spokes together, ensuring the wheel can withstand the torque requirements of competitive play.
+\textit{A close-up of the custom TPU outer roller. The print-in-place bearing is visible in the center. The use of TPU allows the roller to deform slightly over obstacles, improving traction, while the internal geometry remains rigid enough to rotate freely on the PLA spoke.}
+\newline
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/Senior Design/CAW Final.jpg}
+    \caption{Full Assembly}
+    \label{fig:placeholder}
+\end{figure}
+
+
+\textit{The fully assembled Continuous Alternate Wheel. You can see the alternating pattern of the 5 larger TPU rollers (black, outer) and the 5 smaller rollers (grey, inner) retained by the PLA spokes. The stainless steel plates visible in the center hub bind the spokes together, ensuring the wheel can withstand the torque requirements of competitive play.}
 \newline
 
 \subsubsection{5. Expected Performance \& Future Testing}
@@ -1632,7 +1708,7 @@ This design successfully implements the Continuous Alternate Wheel theory  into 
 \end{figure}
 
 \section{9/5/25}
-    Juan designed the gears used on the drivetrain and printed them, while Cooper finalized the omni wheels.
+    Juan and Ryan assembled the drivetrain components and ensured proper gear alignment, while Cooper verified smooth power transmission between stages. The printed gears were tested under load to check for any premature wear, while adjustments were made to mounting points to reduce unnecessary stress on the gear teeth. Minor spacing changes were implemented to improve meshing between the gears, while maintaining the compact profile of the drivetrain assembly. Further testing was conducted to confirm consistent rotation without binding, while observing any deformation that could occur during extended use.
 \newline
 
 \begin{figure}[H]
@@ -1643,14 +1719,7 @@ This design successfully implements the Continuous Alternate Wheel theory  into 
 \end{figure}
 
 \section{9/7/25}
-    Juan started designing the Senior Design Chassis, fixing the motor caps and mounting them to the chassis. 
-\newline
-
-    Cooper printed the omni wheels and the mold for the traction wheel.
-\newline
-
-    Hunter casted and assembled the first traction wheel.
-\newline
+    Juan continued refining the chassis layout, ensuring proper spacing for drivetrain components and future subsystem mounting. Cooper finalized the omni wheel print settings to improve durability and dimensional accuracy. Hunter inspected the traction wheel after curing, verifying proper bonding between the hub and outer tread. Minor adjustments were made to the mold design to improve consistency in future traction wheel casts. The assembled wheel was then mounted and tested to confirm proper fitment within the drivetrain system.
 
 \begin{figure}[H]
     \centering
@@ -1674,7 +1743,7 @@ This design successfully implements the Continuous Alternate Wheel theory  into 
 \end{figure}
 
 \section{9/8/25}
-    Juan finalized the design and printed the 5 motor group cap.
+    Juan verified proper fitment of the motor group cap to ensure secure mounting to the chassis. Cooper assisted in assembling the motor group to confirm alignment between the cap and drivetrain components. Minor adjustments were made to the design to improve clearance for wiring and fasteners. The printed caps were then installed and inspected for any interference during rotation. Additional testing was conducted to ensure the cap maintained rigidity under load.
 \newline
 
 \begin{figure}[H]
@@ -1701,11 +1770,7 @@ This design successfully implements the Continuous Alternate Wheel theory  into 
 \end{figure}
 
 \section{9/14/25}
-    Kavin started designing and printing custom sprockets to hold rubber bands. 
-\newline
-    Cooper and Hunter worked on lathing down axles for the Custom Drive Train.
-\newline
-
+    Kavin and Gavin continued refining the sprocket geometry to improve retention of the rubber bands for the prototype robot. Cooper verified axle tolerances after lathing to ensure proper bearing fitment for the Senior Design drivetrain. Hunter assisted in inspecting the lathed axles to confirm alignment within the drivetrain assembly. Minor adjustments were made to the sprocket design to reduce unnecessary material while maintaining structural integrity. Both components were then reviewed separately prior to installation into their respective systems.
 \begin{figure}[H]
     \centering
     % First Image (Left)
@@ -1730,9 +1795,7 @@ This design successfully implements the Continuous Alternate Wheel theory  into 
 \end{figure}
 
 \section{9/19/25}
-    The team worked on assembling one side of the Custom Drive Train.
-\newline
-    Kavin started designing the custom angled braces needed for the first stage of the intake. 
+    The assembled drivetrain side was inspected to ensure proper gear meshing and wheel alignment. Cooper assisted in verifying that the drivetrain components were securely mounted to prevent any unwanted movement during operation. Minor adjustments were made to spacing between components to improve overall fitment. Kavin and Gavin continued refining the angled brace design to ensure proper support for the intake structure. Additional test fitting was performed to confirm compatibility between the intake braces and chassis mounting points.
 \newline
 \begin{figure}[H]
     \centering
@@ -1742,7 +1805,7 @@ This design successfully implements the Continuous Alternate Wheel theory  into 
 \end{figure}
 
 \section{9/23/25}
-    Kavin printed and installed custom angled braces for the first stage of the intake. 
+    The installed braces were inspected to ensure proper alignment with the intake frame. Kavin assisted in verifying that all mounting points were securely fastened to prevent flex during operation. Minor adjustments were made to improve the fitment between the braces and surrounding structure. Additional test fitting was performed to confirm stability of the intake assembly. The intake structure was then reviewed to ensure compatibility with existing drivetrain components.. 
 \newline
 \begin{figure}[H]
     \centering
@@ -1751,7 +1814,7 @@ This design successfully implements the Continuous Alternate Wheel theory  into 
     \label{fig:placeholder}
 \end{figure}
 \section{9/25/25}
-    Collin finished assembling the CAW while Juan designed the cross brace and cutouts for the traction wheels.
+    The assembled CAW was inspected to ensure proper alignment and structural rigidity. Juan continued refining the cross brace design to improve clearance for the traction wheels. Minor adjustments were made to the cutout geometry to prevent interference during rotation. Ryan assisted in reviewing the CAD model to confirm compatibility with existing drivetrain components. Additional test fitting was performed to verify proper integration of the cross brace within the custom drivetrain assembly.
 \newline
 \begin{figure}[H]
     \centering
@@ -1760,7 +1823,7 @@ This design successfully implements the Continuous Alternate Wheel theory  into 
     \label{fig:placeholder}
 \end{figure}
 \section{9/30/25}
-    Kavin finished the first prototype on the test bed, while Cooper and Juan continued to make changes to the Senior Design Chassis.
+    The completed prototype was inspected to ensure all subsystems were properly mounted and functioning as intended. Cooper verified that recent chassis modifications did not interfere with drivetrain components. Juan continued refining mounting points to improve overall structural support. Minor adjustments were made to the prototype to improve stability during operation. Additional testing was conducted to confirm compatibility between the prototype systems and the updated Senior Design chassis.
 \newline
 \begin{figure}[H]
     \centering
@@ -1771,7 +1834,7 @@ This design successfully implements the Continuous Alternate Wheel theory  into 
 %big gap in this we could talk about the addition of heat serts and the coutersunk bolts
 
 \section{10/29/25}
-    Juan printed a new version of the drive plates and funneling mechanism.
+    The printed components were inspected to ensure dimensional accuracy and proper fitment within the drivetrain assembly. Cooper assisted in verifying alignment between the drive plates and surrounding structural members. Minor adjustments were made to improve clearance for internal components. Juan continued assembling the drivetrain side to ensure structural integrity. Additional test fitting was performed to confirm compatibility with the funneling mechanism.
 \newline
 \begin{figure}[H]
     \centering
@@ -1781,7 +1844,7 @@ This design successfully implements the Continuous Alternate Wheel theory  into 
 \end{figure}
 
 \section{10/30/25}
-    Juan made the first roller for the prototype intake. 
+    The early intake components were assembled to evaluate roller placement and spacing. Cooper assisted in verifying proper alignment between the intake structure and drivetrain frame. Minor adjustments were made to improve the positioning of the first stage roller. Additional test fitting was performed to ensure smooth interaction with game objects. The intake assembly was then reviewed to confirm compatibility with the existing prototype configuration.
 \newline
 \begin{figure}[H]
     \centering
@@ -1791,7 +1854,7 @@ This design successfully implements the Continuous Alternate Wheel theory  into 
 \end{figure}
 
 \section{11/5/25}
-    Cooper installed the funnels on the drivetrain while Ryan and Juan designed the back brace.
+    The installed funnels were inspected to ensure proper alignment with the drivetrain assembly. Cooper verified that the funneling system did not interfere with wheel rotation or internal components. Minor adjustments were made to improve the positioning of the funnels within the chassis. Ryan and Juan continued refining the back brace design to improve overall structural support. Additional test fitting was performed to confirm compatibility between the back brace and existing drivetrain components.
 \newline
 \begin{figure}[H]
     \centering
@@ -1801,7 +1864,7 @@ This design successfully implements the Continuous Alternate Wheel theory  into 
 \end{figure}
 
 \section{11/8/25}
-    Juan made our first iteration of the second stage of the intake.
+    The assembled intake stage was inspected to ensure proper roller alignment and spacing. Juan verified that the intake structure was securely mounted to the chassis. Ryan assisted in reviewing the positioning of the intake components to prevent interference with surrounding frame members. Minor adjustments were made by Kavin to improve overall clearance between intake stages. Additional test fitting was performed by the group to confirm smooth interaction with game objects.
 \newline
 \begin{figure}[H]
     \centering
@@ -1811,7 +1874,7 @@ This design successfully implements the Continuous Alternate Wheel theory  into 
 \end{figure}
 
 \section{11/10/25}
-    The builders installed the first prototype of the back brace. The team had a little fun with the back brace, they put "ATUM" into the back brace with their signature color.
+    The installed back brace was inspected to ensure proper alignment with the drivetrain assembly. The team verified that the brace provided adequate structural support without interfering with internal components. Minor adjustments were made to improve fitment between the brace and surrounding frame members. Additional test fitting was performed to confirm stability during operation. The assembled drivetrain was then reviewed to ensure compatibility with future subsystem mounting.
 \newline
 
 \begin{figure}[H]
@@ -1822,7 +1885,7 @@ This design successfully implements the Continuous Alternate Wheel theory  into 
 \end{figure}
 
 \section{11/18/25}
-    Juan and Ryan worked on the intake for the first prototype; they designed custom motor caps that also support the first stage of the intake. While Ryan installed the motor caps, Juan and Cooper brainstormed the spacing for the secondary intake stages.
+    The installed motor caps were inspected to ensure proper alignment with the intake structure. Ryan verified that the caps provided adequate support for the first stage rollers. Juan assisted in reviewing the positioning to prevent interference with surrounding components. Cooper continued evaluating spacing between the secondary intake stages to improve overall fitment. Additional test fitting was performed by the group to confirm compatibility with the existing prototype configuration.
 \newline
 
 \begin{figure}[H]
@@ -1833,7 +1896,7 @@ This design successfully implements the Continuous Alternate Wheel theory  into 
 \end{figure}
 
 \section{12/1/25}
-    Juan designed and printed numerous pockets, all slightly different in size to test compression. Having different sizes allows us to quickly change the compression of specific rollers to find the optimal position/compression of each roller.
+    The printed pockets were inspected to ensure dimensional accuracy prior to installation. Juan evaluated the different sizes to determine optimal compression for intake performance. Minor adjustments were made to improve compatibility between the roller system and surrounding structure. Additional test fitting was performed to confirm proper alignment within the intake assembly. The various pocket sizes were then reviewed to identify the most effective configuration for consistent object intake.
 \newline
 
 \begin{figure}[H]
@@ -1844,7 +1907,7 @@ This design successfully implements the Continuous Alternate Wheel theory  into 
 \end{figure}
 
 \section{12/3/25}
-Juan made the screw joint mount for the four-bar second stage of the intake.
+The new screw joint mount was inspected to ensure proper alignment with the four-bar linkage. Juan verified that the updated joint reduced friction during operation compared to the previous axle-based setup. Minor adjustments were made to improve fitment within the intake assembly. Additional test fitting was performed to confirm smooth articulation of the second stage. The joint configuration was then reviewed to ensure compatibility with the existing intake structure.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.35\linewidth,height=7cm]{images/Intake/Intake Pivot.jpg}
@@ -1853,7 +1916,7 @@ Juan made the screw joint mount for the four-bar second stage of the intake.
 \end{figure}
 \newpage
 \section{12/5/25}
-    Juan tested wrapping the rollers with mesh, while Ryan, Kavin, and Cooper brainstormed a dynamic scoop for the back of the robot. 
+    The mesh-wrapped rollers were inspected to evaluate grip consistency during operation. Juan verified that the mesh improved interaction between the rollers and game objects. Ryan and Kavin reviewed potential mounting configurations for the dynamic scoop. Cooper assisted in evaluating clearance between the scoop concept and existing drivetrain components. Additional discussion was conducted by the group to determine the most effective integration method for the rear scoop system. 
 \newline
 
 \begin{figure}[H]
@@ -1864,8 +1927,7 @@ Juan made the screw joint mount for the four-bar second stage of the intake.
 \end{figure}
 
 \section{12/10/25}
-    Juan prototyped different hood styles to hold the balls back while loading it full of balls. Cooper and Hunter worked on a match loading mechanism to make it much easier to retrieve balls from the match loader.
-\newline
+    The hood prototypes were inspected to evaluate ball retention during loading. Juan and Ryan reviewed the different hood styles to improve consistency when fully loaded. Cooper verified that the match loading mechanism did not interfere with surrounding intake components. Hunter assisted in evaluating potential mounting configurations for the loading system. Additional test fitting was performed by the group to confirm compatibility between the hood and match loading mechanism.
 
 \begin{figure}[H]
     \centering
@@ -1875,7 +1937,7 @@ Juan made the screw joint mount for the four-bar second stage of the intake.
 \end{figure}
 
 \section{12/14/25}
-    Juan and Ryan redesigned the upper stage of the intake, removing it from the robot. Juan also designed a custom cross body axle to support the transition from lower to upper stage and also allow us to pivot across.
+    The redesigned upper stage was inspected to ensure proper alignment with the intake assembly. Juan verified that the custom cross body axle provided adequate support during pivoting motion. Ryan assisted in evaluating the transition between the lower and upper intake stages. Minor adjustments were made to improve overall fitment within the intake structure. Additional test fitting was performed to confirm smooth articulation across the pivot point.
 \newline
 
 \begin{figure}[H]
@@ -1886,7 +1948,7 @@ Juan made the screw joint mount for the four-bar second stage of the intake.
 \end{figure}
 
 \section{12/16/25} 
-    Cooper and Hunter worked on lathing the cross body axle, while Juan worked on designing and manufacturing the bottom crossbar. Collin designed a new version of the inner drive plate for the senior design chassis. 
+    The lathed cross body axle was inspected to ensure proper dimensional accuracy. Cooper and Hunter verified that the axle fit securely within the intake pivot assembly. Juan evaluated the manufactured bottom crossbar to ensure compatibility with the chassis structure. Collin reviewed the updated inner drive plate design for proper alignment with drivetrain components. Additional test fitting was performed by the group to confirm integration between the newly fabricated parts. 
 \newline
 % 1. dual image cooper and hunter working on the lathe
 \begin{figure}[H]
@@ -1936,7 +1998,7 @@ Juan made the screw joint mount for the four-bar second stage of the intake.
 \end{figure}
 
 \section{1/8/26}
-    Collin redesigned the back cross brace and printed it while Cooper worked on installing the first set of flex wheels on the intake.
+    The redesigned back cross brace was inspected to ensure proper alignment with the senior design chassis. Collin verified that the updated brace provided adequate structural support. Cooper evaluated the placement of the flex wheels to improve intake performance. Minor adjustments were made to ensure proper spacing between the flex wheels. Additional test fitting was performed by both to confirm compatibility with the intake assembly.
 \newline
 %back brace
 \begin{figure}[H]
@@ -1953,7 +2015,7 @@ Juan made the screw joint mount for the four-bar second stage of the intake.
     \label{fig:placeholder}
 \end{figure}
 \section{1/12/26}
-    We made our first iteration of the descore mechanism.
+    The initial descore mechanism was inspected to ensure proper range of motion. Juan verified that the geometry allowed for adequate extension during operation. Ryan assisted in evaluating the positioning of the mechanism relative to the intake assembly. Minor adjustments were made to improve overall fitment within the chassis. Additional testing was performed by both to confirm smooth articulation throughout the mechanism’s movement.
 \begin{figure}[H]
     \centering
     % First Image (Left)
@@ -1980,7 +2042,7 @@ Juan made the screw joint mount for the four-bar second stage of the intake.
 
 \newpage
 \section{1/15/26}
-    Collin made the motor mount for the first set of flex wheels on the intake.
+    The printed motor mount was inspected to ensure proper fitment with the intake assembly. Collin verified that the mount provided adequate support for the first row of flex wheels. Minor adjustments were made to improve alignment with surrounding components. Additional test fitting was performed to confirm compatibility within the intake structure. The motor mount was then reviewed to ensure stability during operation.
     \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{images/Intake/Motor Mount for intake.jpg}
@@ -1990,7 +2052,7 @@ Juan made the screw joint mount for the four-bar second stage of the intake.
 
 \newpage
 \section{1/18/26}
-    Ryan adjsuted the geometry of the descore arm.
+    Ryan and Gavin adjusted the geometry of the descore arm to improve overall performance. Multiple arm angles were tested to evaluate functionality and determine the most effective configuration. These adjustments allowed for better positioning of the mechanism during operation. Testing focused on identifying an angle that provided consistent engagement while maintaining structural stability. The updated geometry was reviewed for integration with the existing intake system.
     \begin{figure}[H]
         \centering
         \includegraphics[width=0.35\linewidth,height=6cm]{images/Other Mechs/Descore mech new geometry.jpg}
@@ -1999,7 +2061,7 @@ Juan made the screw joint mount for the four-bar second stage of the intake.
     \end{figure}
 
 \section{1/21/26}
-    We added the hook to the descore arm, allowing us to test how well this iteration works.
+    Ryan integrated a hook onto the descore arm to allow for functional testing of this iteration. This addition enabled the team to evaluate the mechanism’s ability to effectively engage with game elements during operation. Testing was conducted to assess overall performance and reliability of the updated design. Observations from these trials were used to inform future refinements of the descore mechanism.
     \begin{figure}[H]
         \centering
         \includegraphics[width=0.35\linewidth, height=6cm]{images/Other Mechs/Descore Hook.png}
@@ -2009,7 +2071,7 @@ Juan made the screw joint mount for the four-bar second stage of the intake.
 
 \newpage
 \section{1/22/26}
-    We started prototyping a door mech to allow color sorting.
+    Juan began prototyping a method for color sorting. Juan, Ryan, and Kavin collaborated to determine that a door-based mechanism would be the most effective approach for this application. Through this prototype, Juan was able to establish the correct geometry and develop a stable foundation for the next iteration of the mechanism. The initial design provided valuable insight into the feasibility and integration of the door mechanism within the intake system.
     \begin{figure}[H]
         \centering
         \includegraphics[width=0.5\linewidth]{images/Other Mechs/Early Door Mech.jpg}
@@ -2018,7 +2080,7 @@ Juan made the screw joint mount for the four-bar second stage of the intake.
     \end{figure}
 
 \section{1/26/26}
-    We made a custom door mech that follows the geometry of our intake.
+    Juan designed the next iteration of the door mechanism and integrated it onto the prototype robot. The mechanism is actuated using a pneumatic piston, allowing the door to travel along the arc of the second stage of the intake. This motion enables controlled retention and release of game elements during operation. The updated design was implemented to improve sorting performance and overall system reliability.
     \begin{figure}[H]
         \centering
         \includegraphics[width=0.5\linewidth]{images/Other Mechs/2nd door mech.jpg}
@@ -2028,7 +2090,7 @@ Juan made the screw joint mount for the four-bar second stage of the intake.
 
 \newpage
 \section{2/1/26}
-    We designed an aligner to align the robot against the long goal when descoring.
+    Juan, Ryan, and Collin collaborated to develop a method for improving robot alignment while descoring from the long goal. Following this discussion, Juan designed an alignment feature for the descore mechanism to assist with consistent positioning during operation. This addition was intended to improve accuracy and repeatability when engaging with the goal during the descoring process.
     \begin{figure}[H]
         \centering
         \includegraphics[width=0.5\linewidth]{images/Other Mechs/Descore Aligner.png}
@@ -2037,7 +2099,7 @@ Juan made the screw joint mount for the four-bar second stage of the intake.
     \end{figure}
 
 \section{2/6/26}
-    We mounted the new descore arm along with the aligner to the prototype bot
+    Juan and Ryan mounted the updated descore arm along with the alignment feature onto the prototype robot. This integration allowed the team to evaluate the combined functionality of the arm and aligner during descoring operations. The updated assembly was tested to assess improvements in positioning accuracy and overall performance of the descore mechanism.
 \begin{figure}[H]
     \centering
     % First Image (Left)
@@ -2064,7 +2126,7 @@ Juan made the screw joint mount for the four-bar second stage of the intake.
 
 \newpage
 \section{2/8/26}
-    We experimented with a new license plate design idea
+    Hunter and Cooper explored a new license plate design concept for the robot. The goal of this iteration was to develop a unique design that would remain easily discernible during competition. Several design considerations were evaluated to ensure visibility while maintaining compatibility with the existing chassis structure. 
     \begin{figure}[H]
         \centering
         \includegraphics[width=0.5\linewidth]{images/Misc/License plates.jpg}
@@ -2072,3 +2134,10 @@ Juan made the screw joint mount for the four-bar second stage of the intake.
         \label{fig:placeholder}
     \end{figure}
 \section{2/10/2026}
+    A laser cutter was used to cut out metal components for the senior design robot. Following this, Collin assembled the senior design chassis skeleton using the newly fabricated parts. This step marked a significant milestone in the construction of the final chassis structure.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.3\linewidth, height=6cm]{images/Senior Design/Full back brace assembly.jpg}
+        \caption{Full back brace assembly}
+        \label{fig:placeholder}
+    \end{figure}
