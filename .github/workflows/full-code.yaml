@@ -26,7 +26,7 @@ jobs:
           cp -r tmp/packages/atum/src/* software/code/files/api
           for robot in tmp/packages/*; do
             name=$(basename "$robot")
-            if [ "$name" != "atum" ]; then
+            if [[ "$name" != "atum" && "$name" != "test" ]]; then
               mkdir -p "software/code/files/impl/$name"
               if [ -d "$robot/src" ]; then
                 cp -r "$robot/src/"* "software/code/files/impl/$name/"
