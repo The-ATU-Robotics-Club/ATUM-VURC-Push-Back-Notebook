@@ -1,12 +1,18 @@
 mod autos;
 
-use std::{cell::RefCell, rc::Rc, time::Duration};
+use std::{
+    cell::RefCell,
+    rc::Rc,
+    time::{Duration, Instant},
+};
 
 use atum::{
+    controllers::pid::Pid,
     hardware::{imu::Imu, motor_group::MotorGroup, tracking_wheel::TrackingWheel},
     localization::{odometry::Odometry, pose::Pose, vec2::Vec2},
     logger::Logger,
     mappings::{ControllerMappings, DriveMode},
+    motion::move_to::MoveTo,
     subsystems::{Color, RobotSettings, drivetrain::Drivetrain, intake::Intake},
     theme::STOUT_ROBOT,
 };
@@ -34,15 +40,20 @@ struct Robot {
 
 impl Compete for Robot {
     async fn autonomous(&mut self) {
-        let path = 0;
+        let time = Instant::now();
+        let path = 5;
 
         match path {
             0 => self.qual().await,
             1 => self.elims().await,
             2 => self.safequals().await,
             3 => self.rushelims().await,
+            4 => self.rushcontrol().await,
+            5 => self.skills().await,
             _ => (),
         }
+
+        info!("Time elapsed: {:?}", time.elapsed());
     }
 
     async fn driver(&mut self) {
@@ -87,6 +98,32 @@ impl Compete for Robot {
 
             if mappings.match_load.is_now_pressed() {
                 _ = self.match_loader.toggle();
+            }
+
+            if state.button_x.is_pressed() {
+                if state.button_down.is_pressed() {
+                    self.drivetrain.set_pose(Pose::new(
+                        Length::new::<inch>(0.0),
+                        Length::new::<inch>(0.0),
+                        Angle::HALF_TURN,
+                    ));
+                }
+
+                if state.button_right.is_pressed() {
+                    let mut move_to = MoveTo::new(
+                        Pid::new(30.0, 2.0, 6.0, 12.0),
+                        Pid::new(20.0, 0.0, 0.0, 0.0),
+                        Length::new::<inch>(0.5),
+                    );
+
+                    move_to
+                        .timeout(Duration::from_millis(3000))
+                        .move_to_point(
+                            &mut self.drivetrain,
+                            Vec2::new(Length::new::<inch>(60.0), Length::new::<inch>(-4.0)),
+                        )
+                        .await;
+                }
             }
 
             info!("Drivetrain: {}", self.drivetrain.pose());
