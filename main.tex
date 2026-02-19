@@ -1,17 +1,21 @@
-\documentclass[]{ATUEngineeringNotebook} 
-\addbibresource{bibliography.bib} 
+\documentclass[]{ATUEngineeringNotebook}
+\addbibresource{bibliography.bib}
 \input{software/code/rust-listings.shy}
 \usepackage{emoji}
+% \usepackage[linktodoc=false]{pdfpages}
 \nocite{*}
 \begin{document}
+% \includepdf[pages=-]{ATUM-Engineering-Notebook-Cover.pdf}
+% \includepdf[pages=-]{InnovateSubmissionForm.pdf}
 \pagestyle{plain}
 \frontmatter
 \raggedbottom
 \setcounter{tocdepth}{4}
 \tableofcontents
-\mainmatter \mypart{Preface}{Ch}{preface}
+\mainmatter
+\mypart{Preface}{Ch}{preface}
 \mypart{Hardware}{Ch}{hardware}
-\mypart{Engineering Drawings}{Ch}{Engineering Drawings} 
+% \mypart{Engineering Drawings}{Ch}{Engineering Drawings}
 \mypart{Software}{Ch}{software/software} 
 \backmatter
 \renewcommand{\thechapter}{A} 
