@@ -1,4 +1,4 @@
-\chapter{Move-To-Point Controller}
+\chapter{Move To Point Controller}
 
 To drive to a field coordinate reliably, we implement a closed-loop \textbf{move-to-point} controller that uses odometry pose $(x,y,\theta)$ and two PID loops:
 \begin{itemize}
@@ -10,7 +10,8 @@ This is more repeatable than timed driving because any disturbance (slip, batter
 
 \subsubsection{Computing the Position Error from Odometry}
 
-Each cycle we read the current pose from odometry and form the vector from the robot to the target:
+Each cycle reads the current pose from odometry and forms the vector from the robot to the target:
+
 \begin{lstlisting}[language=rust]
 let pose = dt.pose();
 let position_error = Vec2::new(
